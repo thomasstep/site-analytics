@@ -37,7 +37,7 @@ Using a type of resource-based authorization where each individual resource (sit
 | ------------------- | ------------- | -------------- |
 | `<user-id>`         | `profile`     | `{ owner: string[], admin: string[], writer: string[], reader: string[], created: timestamp }` |
 | `<site-id>`         | `site`        | `{ owner: string, admins: string[], writers: string[], readers: string[], emails: string[], url: string, created: timestamp }` |
-| `<site-id>#<date>`  | `stats`       | `{ pageViews: { overall: number, <page-name>: number }, <other-statistic>: { <identifier>: number } }` |
+| `<site-id>#<date>`  | `stats`       | `{ pageViews: { overall: number, <page-name>: number }, <other-statistic>: { <identifier>: number }, ttl: timestamp }` |
 | Potential GSI Below ||
 | `<site-id>`         | none          | `{ emails: string[] }` |
 
@@ -109,7 +109,7 @@ Using a type of resource-based authorization where each individual resource (sit
   - Can only be done by the user themselves, owners, or admins
   - Remove user from site's readers set
   - Remove site to user's readers set
-- `POST` `/sites/{id}/stat`
+- `POST` `/sites/{id}/stats`
   - Async
   - Adds to the site's statistics
   - Could use `Host` header to determine which site should get credit or the site's ID
