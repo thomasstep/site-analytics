@@ -46,6 +46,8 @@ export class SiteAnalyticsStack extends Stack {
       sqsQueue = new sqs.Queue(this, 'queue');
     }
 
+    // TODO check config for useAuthorization
+    // config.useAuthorization
     const finalCrowApiProps = {
       ...crowApiProps,
       methodConfigurations: {
