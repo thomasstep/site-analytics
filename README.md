@@ -45,7 +45,7 @@ Using a type of resource-based authorization where each individual resource (sit
 | Partition key       | Secondary key | { Attributes } |
 | ------------------- | ------------- | -------------- |
 | `<user-id>`         | `profile`     | `{ owner: string[], admin: string[], writer: string[], reader: string[], created: timestamp }` |
-| `<site-id>`         | `site`        | `{ owner: string, admins: string[], writers: string[], readers: string[], emails: string[], url: string, created: timestamp }` |
+| `<site-id>`         | `site`        | `{ owner: string, admins: string[], writers: string[], readers: string[], emails: string[], name: string, url: string, created: timestamp }` |
 | `<site-id>#<date>`  | `stats`       | `{ pageViews: { overall: number, <page-name>: number }, <other-statistic>: { <identifier>: number }, ttl: timestamp }` |
 | Potential GSI Below ||
 | `<site-id>`         | none          | `{ emails: string[] }` |
@@ -78,7 +78,7 @@ Using a type of resource-based authorization where each individual resource (sit
   - Return user's profile data
   - Response: Lists of sites user has access to
 - `GET` `/sites/{id}`
-  - Response: Site item in DDB; site's view count/other statistics, emails, URL
+  - Response: Site item in DDB; site's view count/other statistics, emails, URL, name
 - `PUT` `/sites/{id}/owner` (future)
   - Async
   - Request: new owner's user ID

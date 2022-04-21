@@ -8,5 +8,10 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.74.0",
+    "@aws-sdk/lib-dynamodb": "^3.74.0",
+    "winston": "^3.7.2"
+  }
 }

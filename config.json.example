@@ -1,9 +1,0 @@
-{
-  "useSqs": false,
-  "useAuthorization": true,
-  "jwksUrl": "your-jwt-server.url",
-  "jwtUserUniqueIdKey": "email",
-  "jwtClaims": {
-    "maxTokenAge": 21600
-  }
-}

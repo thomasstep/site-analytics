@@ -2,7 +2,7 @@
   "useSqs": false,
   "useAuthorization": true,
   "jwksUrl": "https://crowauth.thomasstep.com/v1/jwks.json",
-  "jwtUserUniqueIdKey": "email",
+  "jwtUserIdKey": "email",
   "jwtClaims": {
     "maxTokenAge": 21600
   }

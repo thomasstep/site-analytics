@@ -8,3 +8,4 @@ node_modules
 cdk.out
 
 !src/**/*.js
+!asyncSrc/**/*.js

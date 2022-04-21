@@ -1,6 +1,10 @@
 const { jwtVerify } = require('jose/jwt/verify');
+const { createUser } = require('../shared/ports');
 
 const config = require('/opt/config');
+const {
+  readUser,
+} = require('/opt/ports');
 
 // Helper function to generate an IAM policy
 var generatePolicy = function(principalId, apiStageArn, userUniqueId /* userData */) {
@@ -38,21 +42,20 @@ exports.handler = async function(event, context, callback) {
   try {
     const {
       jwksUrl,
-      jwtUserUniqueIdKey,
+      jwtUserIdKey,
       jwtClaims,
     } = config;
     const JWKS = createRemoteJWKSet(new URL(jwksUrl));
     const { payload, protectedHeader } = await jwtVerify(token, JWKS, jwtClaims);
-    const userUniqueId = payload[jwtUserUniqueIdKey];
+    const userId = payload[jwtUserIdKey];
 
-    const userData = await getUser(userUniqueId);
+    const userData = await readUser(userId);
     if (!userData) {
-      // TODO Create User
-      // TODO Should we store user data in the policy or retrieve in every handler?
+      await createUser(userId);
       throw new Error('User does not exist');
     }
 
-    const policy = generatePolicy(applicationId, apiStageArn, userUniqueId);
+    const policy = generatePolicy(applicationId, apiStageArn, userId);
     return policy;
   } catch (err) {
     console.error('Bad things happened while decoding JWT');

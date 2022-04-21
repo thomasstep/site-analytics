@@ -167,7 +167,7 @@ export class SiteAnalyticsStack extends Stack {
           credentialsRole: apiGatewayRole,
           passthroughBehavior: apigateway.PassthroughBehavior.NEVER,
           requestParameters: {
-            'integration.request.header.Content-Type': "'application/x-www-form-urlencoded'"
+            'integration.request.header.Content-Type': "'application/x-www-form-urlencoded'" // TODO test out using json instead of form
           },
           requestTemplates: {
             'application/json': `Action=Publish&TopicArn=$util.urlEncode(\'${snsTopic.topicArn}\')\
