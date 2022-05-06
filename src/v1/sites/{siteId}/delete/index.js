@@ -1,3 +1,4 @@
+const { GOOD_NO_OUTPUT_STATUS_CODE } = require('/opt/config');
 const {
   withErrorHandling,
 } = require('/opt/lambdaAdapterUtils');
@@ -6,14 +7,11 @@ const { port } = require('./port');
 
 exports.handler = async function (event, context, callback) {
   const result = await withErrorHandling(async (event, auth) => {
-    const body = JSON.parse(event.body);
+    const siteId = event.pathParameters.siteId;
 
-    const xxxxxx = await port(auth, body);
+    await port(auth, siteId);
     const data = {
-      statusCode: CREATED_STATUS_CODE,
-      body: JSON.stringify({
-        id: xxxxxx,
-      }),
+      statusCode: GOOD_NO_OUTPUT_STATUS_CODE,
     };
     return data;
   })(event);

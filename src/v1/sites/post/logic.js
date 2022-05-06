@@ -1,7 +1,7 @@
 const {
   MissingUniqueIdError,
 } = require('/opt/errors');
-const { myOutboundPort } = require('/opt/ports');
+const { createSite } = require('/opt/ports');
 
 /**
  * Business logic
@@ -10,7 +10,7 @@ const { myOutboundPort } = require('/opt/ports');
  * @returns {string}
  */
 
-exports.logic = async function (auth) {
+exports.logic = async function (auth, url, name) {
   const {
     uniqueId,
   } = auth;
@@ -18,6 +18,6 @@ exports.logic = async function (auth) {
     throw new MissingUniqueIdError('Unique ID not found while creating calendar', auth);
   }
 
-  const xxxxx = await myOutboundPort(uniqueId);
+  const xxxxx = await createSite(uniqueId, url, name);
   return xxxxx;
 }

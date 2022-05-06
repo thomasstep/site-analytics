@@ -7,13 +7,13 @@ const { port } = require('./port');
 
 exports.handler = async function (event, context, callback) {
   const result = await withErrorHandling(async (event, auth) => {
-    const body = JSON.parse(event.body);
+    const siteId = event.pathParameters.siteId;
 
-    const id = await port(auth, body);
+    const siteData = await port(auth, siteId);
     const data = {
       statusCode: CREATED_STATUS_CODE,
       body: JSON.stringify({
-        id,
+        ...siteData,
       }),
     };
     return data;

@@ -8,9 +8,11 @@ const {
   NOT_FOUND_STATUS_CODE,
   SERVER_ERROR_STATUS_CODE,
   UNAUTHENTICATED_STATUS_CODE,
+  UNAUTHORIZED_STATUS_CODE,
 } = require('/opt/config');
 const {
   MissingUniqueIdError,
+  UnauthorizedError,
 } = require('/opt/errors');
 const { logger } = require('/opt/logger');
 
@@ -34,13 +36,13 @@ function withErrorHandling(func) {
       let statusCode = SERVER_ERROR_STATUS_CODE;
       let message = 'Internal server error';
 
-      if (err instanceof MissingEventError) {
-        statusCode = NOT_FOUND_STATUS_CODE;
+      if (err instanceof MissingUniqueIdError) {
+        statusCode = UNAUTHENTICATED_STATUS_CODE;
         message = err.message;
       }
 
-      if (err instanceof MissingUniqueIdError) {
-        statusCode = UNAUTHENTICATED_STATUS_CODE;
+      if (err instanceof UnauthorizedError) {
+        statusCode = UNAUTHORIZED_STATUS_CODE;
         message = err.message;
       }
 

@@ -11,7 +11,7 @@ const { generateToken } = require('/opt/generateToken');
  * @param {string} owner User ID for the owner
  * @returns {string} Site's ID
  */
-async function create(owner, url) {
+async function create(owner, url, name) {
   const newSiteId = generateToken();
   const now = new Date();
   await documentClient.put({
@@ -24,7 +24,7 @@ async function create(owner, url) {
       writers: new Set([]),
       readers: new Set([]),
       emails: new Set([]),
-      name: url,
+      name: name || url,
       url,
       created: now.toISOString(),
     },
@@ -34,6 +34,57 @@ async function create(owner, url) {
   return newSiteId;
 }
 
+/**
+ *
+ * @param {*} id Site ID to read
+ * @returns {Object} siteData
+ *                   {
+ *                     id: string,
+ *                     owner: string,
+ *                     admins: string[],
+ *                     writers: string[],
+ *                     readers: string[],
+ *                     readers: string[],
+ *                     name: string,
+ *                     url: string,
+ *                     created: timestamp
+ *                   }
+ */
+ async function read(id) {
+  const site = await documentClient.get({
+    TableName,
+    Key: {
+      id,
+      secondaryId: siteSecondaryId,
+    },
+  });
+  if (!site.Item) {
+    return {};
+  }
+
+  const {
+    secondaryId,
+    ...siteData
+  } = site.Item;
+  return siteData;
+}
+
+/**
+ *
+ * @param {string} id Site ID to be deleted
+ */
+ async function remove(id) {
+  await documentClient.delete({
+    TableName,
+    Key: {
+      id,
+      secondaryId: siteSecondaryId,
+    },
+  });
+}
+
 module.exports = {
   create,
+  read,
+  remove,
 };

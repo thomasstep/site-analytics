@@ -22,8 +22,17 @@ class MissingUniqueIdError extends Error {
   }
 }
 
+class UnauthorizedError extends Error {
+  constructor(message) {
+    super(message);
+
+    this.name = 'UnauthorizedError';
+  }
+}
+
 module.exports = {
   ApiKeyError,
   InputError,
   MissingUniqueIdError,
+  UnauthorizedError,
 };

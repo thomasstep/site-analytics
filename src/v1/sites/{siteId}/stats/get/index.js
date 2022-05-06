@@ -1,3 +1,4 @@
+const { CREATED_STATUS_CODE } = require('/opt/config');
 const {
   withErrorHandling,
 } = require('/opt/lambdaAdapterUtils');

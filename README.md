@@ -24,6 +24,7 @@ As a user I would like to be able to
 - know unique user count
 - know geographic locations of users
 - receive an email update of yesterday's history (needs scaling cron)
+- make my analytics public
 
 ### Authentication
 
@@ -122,13 +123,18 @@ Using a type of resource-based authorization where each individual resource (sit
   - Async
   - Adds to the site's statistics
   - Could use `Host` header to determine which site should get credit or the site's ID
+- `GET` `/sites/{id}/stats`
+  - Query parameters: start date, end date
+  - Reads the site's statistics for given days
+  - Only retrieve up to 7 days (MVP)
+  - Paginate results for larger datasets (future)
 - `POST` `/sites/{id}/email/{address}` (future)
   - Async
   - Adds email to snapshot list
 - `DELETE` `/sites/{id}/email/{address}` (future)
   - Async
   - Removes email to snapshot list
-- `DELETE` `/sites/{id}` (future)
+- `DELETE` `/sites/{id}`
   - Deletes site and all data
     - If data is not being archived
       - Reads site's created date

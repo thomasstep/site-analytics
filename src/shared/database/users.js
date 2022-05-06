@@ -20,7 +20,7 @@ const listTypes = {
  * @param {string} siteId ID of new site
  * @param {SiteListTypes} list Site list to add to
  */
- async function addSite(id, siteId, list) {
+async function addSite(id, siteId, list) {
   const updateParams = {
     UpdateExpression: 'ADD #siteList :siteId',
     ExpressionAttributeNames: {
@@ -39,7 +39,7 @@ const listTypes = {
  * @param {string} siteId ID of new site
  * @param {SiteListTypes} list Site list to add to
  */
- async function removeSite(id, siteId, list) {
+async function removeSite(id, siteId, list) {
   const updateParams = {
     UpdateExpression: 'DELETE #siteList :siteId',
     ExpressionAttributeNames: {
@@ -81,11 +81,12 @@ const listTypes = {
  * @param {*} id User ID to read
  * @returns {Object} userData
  *                   {
- *                   owner: string[],
- *                   admin: string[],
- *                   writer: string[],
- *                   reader: string[],
- *                   created: timestamp
+ *                     id: string,
+ *                     owner: string[],
+ *                     admin: string[],
+ *                     writer: string[],
+ *                     reader: string[],
+ *                     created: timestamp
  *                   }
  */
 async function read(id) {
