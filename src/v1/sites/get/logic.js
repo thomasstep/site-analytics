@@ -10,7 +10,7 @@ const { readUser } = require('/opt/ports');
  * @returns {string}
  */
 
-exports.logic = async function (auth) {
+async function logic(auth) {
   const {
     uniqueId,
   } = auth;
@@ -24,6 +24,10 @@ exports.logic = async function (auth) {
     admin: userData.admin,
     writer: userData.writer,
     reader: userData.reader,
-  }
+  };
   return sites;
 }
+
+module.exports = {
+  logic,
+};

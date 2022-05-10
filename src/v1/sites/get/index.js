@@ -5,9 +5,9 @@ const {
 
 const { port } = require('./port');
 
-exports.handler = async function (event, context, callback) {
+async function handler(event) {
+  // eslint-disable-next-line no-shadow, no-unused-vars
   const result = await withErrorHandling(async (event, auth) => {
-
     const sites = await port(auth);
     const data = {
       statusCode: GOOD_STATUS_CODE,
@@ -20,3 +20,7 @@ exports.handler = async function (event, context, callback) {
 
   return result;
 }
+
+module.exports = {
+  handler,
+};

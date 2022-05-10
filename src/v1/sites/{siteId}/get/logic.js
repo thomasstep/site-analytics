@@ -11,7 +11,7 @@ const { readSite } = require('/opt/ports');
  * @returns {Object}
  */
 
-exports.logic = async function (auth, siteId) {
+async function logic(auth, siteId) {
   const {
     uniqueId,
   } = auth;
@@ -23,3 +23,7 @@ exports.logic = async function (auth, siteId) {
 
   return siteData;
 }
+
+module.exports = {
+  logic,
+};

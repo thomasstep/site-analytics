@@ -11,7 +11,7 @@ const { deleteSite } = require('/opt/ports');
  * @returns {string}
  */
 
-exports.logic = async function (auth, siteId) {
+async function logic(auth, siteId) {
   const {
     uniqueId,
   } = auth;
@@ -20,5 +20,8 @@ exports.logic = async function (auth, siteId) {
   }
 
   await deleteSite(uniqueId, siteId);
-  return;
 }
+
+module.exports = {
+  logic,
+};

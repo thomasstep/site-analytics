@@ -10,7 +10,7 @@ const { myOutboundPort } = require('/opt/ports');
  * @returns {string}
  */
 
-exports.logic = async function (auth) {
+async function logic(auth) {
   const {
     uniqueId,
   } = auth;
@@ -21,3 +21,7 @@ exports.logic = async function (auth) {
   const xxxxx = await myOutboundPort(uniqueId);
   return xxxxx;
 }
+
+module.exports = {
+  logic,
+};

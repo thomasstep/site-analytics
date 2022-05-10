@@ -16,48 +16,10 @@ const listTypes = {
 
 /**
  *
- * @param {string} id Internal prefix which is the user's unique ID
- * @param {string} siteId ID of new site
- * @param {SiteListTypes} list Site list to add to
- */
-async function addSite(id, siteId, list) {
-  const updateParams = {
-    UpdateExpression: 'ADD #siteList :siteId',
-    ExpressionAttributeNames: {
-      '#siteList': list,
-    },
-    ExpressionAttributeValues: {
-      ':siteId': new Set([siteId]),
-    },
-  }
-  await update(id, updateParams);
-}
-
-/**
- *
- * @param {string} id Internal prefix which is the user's unique ID
- * @param {string} siteId ID of new site
- * @param {SiteListTypes} list Site list to add to
- */
-async function removeSite(id, siteId, list) {
-  const updateParams = {
-    UpdateExpression: 'DELETE #siteList :siteId',
-    ExpressionAttributeNames: {
-      '#siteList': list,
-    },
-    ExpressionAttributeValues: {
-      ':siteId': new Set([siteId]),
-    },
-  }
-  await update(id, updateParams);
-}
-
-/**
- *
  * @param {string} id User ID
  * @returns
  */
- async function create(id) {
+async function create(id) {
   const now = new Date();
   await documentClient.put({
     TableName,
@@ -72,8 +34,6 @@ async function removeSite(id, siteId, list) {
     },
     ConditionExpression: 'attribute_not_exists(id)',
   });
-
-  return;
 }
 
 /**
@@ -102,7 +62,7 @@ async function read(id) {
   }
 
   const {
-    secondaryId,
+    secondaryId: throwAway,
     ...userData
   } = user.Item;
   return userData;
@@ -126,7 +86,44 @@ async function update(id, updateParams) {
     },
     ...updateParams,
   });
-  return;
+}
+
+/**
+ *
+ * @param {string} id Internal prefix which is the user's unique ID
+ * @param {string} siteId ID of new site
+ * @param {SiteListTypes} list Site list to add to
+ */
+async function addSite(id, siteId, list) {
+  const updateParams = {
+    UpdateExpression: 'ADD #siteList :siteId',
+    ExpressionAttributeNames: {
+      '#siteList': list,
+    },
+    ExpressionAttributeValues: {
+      ':siteId': new Set([siteId]),
+    },
+  };
+  await update(id, updateParams);
+}
+
+/**
+ *
+ * @param {string} id Internal prefix which is the user's unique ID
+ * @param {string} siteId ID of new site
+ * @param {SiteListTypes} list Site list to add to
+ */
+async function removeSite(id, siteId, list) {
+  const updateParams = {
+    UpdateExpression: 'DELETE #siteList :siteId',
+    ExpressionAttributeNames: {
+      '#siteList': list,
+    },
+    ExpressionAttributeValues: {
+      ':siteId': new Set([siteId]),
+    },
+  };
+  await update(id, updateParams);
 }
 
 module.exports = {

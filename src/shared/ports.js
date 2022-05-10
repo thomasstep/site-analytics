@@ -7,7 +7,7 @@ const {
 /**
  * @enum {OperationTypes}
  */
- const operationTypes = {
+const operationTypes = {
   READ: 'read',
   WRITE: 'write',
   DELETE: 'delete',
@@ -21,10 +21,10 @@ const {
  * @returns {Object} siteData
  */
 async function authorizeUserForSite(uniqueId, siteId, operation) {
-  const siteData = await site.read(siteId);
+  const siteData = await sites.read(siteId);
   let isAuthorized = false;
 
-  if(uniqueId === siteData.owner) {
+  if (uniqueId === siteData.owner) {
     isAuthorized = true;
   }
 
@@ -48,7 +48,7 @@ async function authorizeUserForSite(uniqueId, siteId, operation) {
     if (list.includes(uniqueId)) {
       isAuthorized = true;
     }
-  })
+  });
 
   if (isAuthorized) {
     return siteData;
@@ -92,4 +92,4 @@ module.exports = {
   readSite,
   readUser,
   deleteSite,
-}
+};

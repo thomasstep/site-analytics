@@ -14,7 +14,7 @@ const logger = winston.createLogger({
     new winston.transports.Console({
       level: LOGGER_LEVEL,
     }),
-  ]
+  ],
 });
 
 module.exports = {

@@ -50,7 +50,7 @@ async function create(owner, url, name) {
  *                     created: timestamp
  *                   }
  */
- async function read(id) {
+async function read(id) {
   const site = await documentClient.get({
     TableName,
     Key: {
@@ -73,7 +73,7 @@ async function create(owner, url, name) {
  *
  * @param {string} id Site ID to be deleted
  */
- async function remove(id) {
+async function remove(id) {
   await documentClient.delete({
     TableName,
     Key: {

@@ -10,7 +10,7 @@ const { createSite } = require('/opt/ports');
  * @returns {string}
  */
 
-exports.logic = async function (auth, url, name) {
+async function logic(auth, url, name) {
   const {
     uniqueId,
   } = auth;
@@ -21,3 +21,7 @@ exports.logic = async function (auth, url, name) {
   const xxxxx = await createSite(uniqueId, url, name);
   return xxxxx;
 }
+
+module.exports = {
+  logic,
+};

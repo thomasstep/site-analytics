@@ -89,8 +89,10 @@ export class SiteAnalyticsStack extends Stack {
       [
         '/v1/sites/post',
         '/v1/sites/get',
-        '/v1/sites/{id}/get',
-        // '/v1/sites/{id}/stats/post',
+        '/v1/sites/{siteId}/get',
+        '/v1/sites/{siteId}/delete',
+        '/v1/sites/{siteId}/stats/get',
+        // '/v1/sites/{siteId}/stats/post',
       ],
       'PRIMARY_TABLE_NAME',
     );
@@ -119,7 +121,7 @@ export class SiteAnalyticsStack extends Stack {
        throw new Error('sites resource cannot be found');
      }
 
-    const sitesIdResource = sitesResource.getResource('{id}');
+    const sitesIdResource = sitesResource.getResource('{siteId}');
      if (!sitesIdResource) {
        throw new Error('sites by ID resource cannot be found');
      }

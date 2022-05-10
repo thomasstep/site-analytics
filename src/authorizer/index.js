@@ -1,41 +1,42 @@
+const jose = require('jose');
 const { jwtVerify } = require('jose/jwt/verify');
-const { createUser } = require('../shared/ports');
-
 const config = require('/opt/config');
+const { logger } = require('/opt/logger');
 const {
+  createUser,
   readUser,
 } = require('/opt/ports');
 
 // Helper function to generate an IAM policy
-var generatePolicy = function(principalId, apiStageArn, userUniqueId /* userData */) {
-    const authResponse = {};
+function generatePolicy(principalId, apiStageArn, userUniqueId /* userData */) {
+  const authResponse = {};
 
-    authResponse.principalId = principalId;
-    const policyDocument = {
-      Version: '2012-10-17',
-      Statement: [
-        {
-          Action: 'execute-api:Invoke',
-          Effect: 'Allow',
-          Resource: `${apiStageArn}/*`,
-        },
-      ],
-    };
+  authResponse.principalId = principalId;
+  const policyDocument = {
+    Version: '2012-10-17',
+    Statement: [
+      {
+        Action: 'execute-api:Invoke',
+        Effect: 'Allow',
+        Resource: `${apiStageArn}/*`,
+      },
+    ],
+  };
 
-    authResponse.policyDocument = policyDocument;
-    authResponse.context = {
-      userUniqueId,
-    };
-    // authResponse.context = userData;
+  authResponse.policyDocument = policyDocument;
+  authResponse.context = {
+    userUniqueId,
+  };
+  // authResponse.context = userData;
 
-    return authResponse;
+  return authResponse;
 }
 
-exports.handler = async function(event, context, callback) {
+async function handler(event) {
   const authorizationHeader = event.authorizationToken;
-  const [type, token] = authorizationHeader.split(' ');
+  const [, token] = authorizationHeader.split(' ');
 
-  const methodArn = event.methodArn;
+  const { methodArn } = event;
   const [apiGatewayArn, stage] = methodArn.split('/');
   const apiStageArn = `${apiGatewayArn}/${stage}`;
 
@@ -45,8 +46,8 @@ exports.handler = async function(event, context, callback) {
       jwtUserIdKey,
       jwtClaims,
     } = config;
-    const JWKS = createRemoteJWKSet(new URL(jwksUrl));
-    const { payload, protectedHeader } = await jwtVerify(token, JWKS, jwtClaims);
+    const JWKS = jose.createRemoteJWKSet(new URL(jwksUrl));
+    const { payload } = await jwtVerify(token, JWKS, jwtClaims);
     const userId = payload[jwtUserIdKey];
 
     const userData = await readUser(userId);
@@ -55,12 +56,16 @@ exports.handler = async function(event, context, callback) {
       throw new Error('User does not exist');
     }
 
-    const policy = generatePolicy(applicationId, apiStageArn, userId);
+    const policy = generatePolicy(userId, apiStageArn, userId);
     return policy;
   } catch (err) {
-    console.error('Bad things happened while decoding JWT');
-    console.error(err);
+    logger.error('Bad things happened while decoding JWT');
+    logger.error(err);
   }
 
   throw new Error('Unauthorized');
+}
+
+module.exports = {
+  handler,
 };

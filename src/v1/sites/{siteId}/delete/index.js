@@ -5,9 +5,10 @@ const {
 
 const { port } = require('./port');
 
-exports.handler = async function (event, context, callback) {
+async function handler(event) {
+  // eslint-disable-next-line no-shadow
   const result = await withErrorHandling(async (event, auth) => {
-    const siteId = event.pathParameters.siteId;
+    const { siteId } = event.pathParameters;
 
     await port(auth, siteId);
     const data = {
@@ -18,3 +19,7 @@ exports.handler = async function (event, context, callback) {
 
   return result;
 }
+
+module.exports = {
+  handler,
+};

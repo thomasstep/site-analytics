@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 class ApiKeyError extends Error {
   constructor(message) {
     super(message);
@@ -36,3 +37,4 @@ module.exports = {
   MissingUniqueIdError,
   UnauthorizedError,
 };
+/* eslint-enable max-classes-per-file */

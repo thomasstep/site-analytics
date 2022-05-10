@@ -2,10 +2,6 @@ const {
   constructAuth,
 } = require('/opt/authUtils');
 const {
-  BAD_INPUT_STATUS_CODE,
-  CONFLICT_STATUS_CODE,
-  FORBIDDEN_STATUS_CODE,
-  NOT_FOUND_STATUS_CODE,
   SERVER_ERROR_STATUS_CODE,
   UNAUTHENTICATED_STATUS_CODE,
   UNAUTHORIZED_STATUS_CODE,
@@ -55,9 +51,9 @@ function withErrorHandling(func) {
 
       return errorPayload;
     }
-  }
+  };
 }
 
 module.exports = {
   withErrorHandling,
-}
+};
