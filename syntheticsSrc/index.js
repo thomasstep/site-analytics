@@ -113,7 +113,7 @@ exports.handler = async function (event, context, callback) {
     );
     assert.ok(
       getSites.data.owner,
-      'Response does not include owner list',
+      'GET /sites response does not include owner list',
     );
     assert.ok(
       getSites.data.owner.includes(siteId),
@@ -121,15 +121,15 @@ exports.handler = async function (event, context, callback) {
     );
     assert.ok(
       getSites.data.admin,
-      'Response does not include admin list',
+      'GET /sites response does not include admin list',
     );
     assert.ok(
       getSites.data.writer,
-      'Response does not include writer list',
+      'GET /sites response does not include writer list',
     );
     assert.ok(
       getSites.data.reader,
-      'Response does not include reader list',
+      'GET /sites response does not include reader list',
     );
     console.log('PASSED');
 
@@ -148,35 +148,35 @@ exports.handler = async function (event, context, callback) {
     );
     assert.ok(
       getSiteById.data.created,
-      'Response does not include created time',
+      'GET /sites/{siteId} response does not include created time',
     );
     assert.ok(
       getSiteById.data.owner == testEmail,
-      `Response does not include correct owner ${getSiteById.data.owner}`,
+      `GET /sites/{siteId} response does not include correct owner ${getSiteById.data.owner}`,
     );
     assert.ok(
       getSiteById.data.id == siteId,
-      `Response does not include correct site ID ${getSiteById.data.id}`,
+      `GET /sites/{siteId} response does not include correct site ID ${getSiteById.data.id}`,
     );
     assert.ok(
       getSiteById.data.url == testUrl,
-      `Response does not include correct URL ${getSiteById.data.url}`,
+      `GET /sites/{siteId} response does not include correct URL ${getSiteById.data.url}`,
     );
     assert.ok(
       getSiteById.data.name == testUrl,
-      `Response does not include correct default name ${getSiteById.data.name}`,
+      `GET /sites/{siteId} response does not include correct default name ${getSiteById.data.name}`,
     );
     assert.ok(
       getSiteById.data.admins,
-      'Response does not include admins',
+      'GET /sites/{siteId} response does not include admins',
     );
     assert.ok(
       getSiteById.data.writers,
-      'Response does not include writers',
+      'GET /sites/{siteId} response does not include writers',
     );
     assert.ok(
       getSiteById.data.readers,
-      'Response does not include readers',
+      'GET /sites/{siteId} response does not include readers',
     );
     console.log('PASSED');
 
@@ -236,4 +236,4 @@ exports.handler = async function (event, context, callback) {
   }
 }
 
-exports.handler()
+// exports.handler()
