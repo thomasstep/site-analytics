@@ -32,6 +32,7 @@ interface ISiteAnalyticsStackProps extends StackProps {
 }
 
 export class SiteAnalyticsStack extends Stack {
+  public api!: CrowApi;
   constructor(scope: Construct, id: string, props: ISiteAnalyticsStackProps) {
     super(scope, id, props);
 
@@ -51,30 +52,33 @@ export class SiteAnalyticsStack extends Stack {
     const finalCrowApiProps = {
       ...crowApiProps,
       methodConfigurations: {
-        '/v1/calendars/{calendarId}/delete': {
-          apiKeyRequired: true,
+        '/v1/sites/post': {
           authorizationType: apigateway.AuthorizationType.CUSTOM,
-        },
-        '/v1/calendars/post': {
-          apiKeyRequired: true,
-          authorizationType: apigateway.AuthorizationType.CUSTOM,
-        },
-        '/v1/calendars/{calendarId}/events/post': {
+          useAuthorizerLambda: true,
           requestModels: {
-            'application/json': 'eventsPost',
+            'application/json': 'createSite',
           },
           requestValidator: 'validateBody',
-          apiKeyRequired: true,
-          authorizationType: apigateway.AuthorizationType.CUSTOM,
         },
-        '/v1/calendars/{calendarId}/events/get': {
-          requestParameters: {
-            'method.request.querystring.startTime': true,
-            'method.request.querystring.endTime': true,
-          },
-          requestValidator: 'validateParams',
-          apiKeyRequired: true,
+        '/v1/sites/get': {
           authorizationType: apigateway.AuthorizationType.CUSTOM,
+          useAuthorizerLambda: true,
+        },
+        '/v1/sites/{siteId}/get': {
+          authorizationType: apigateway.AuthorizationType.CUSTOM,
+          useAuthorizerLambda: true,
+        },
+        '/v1/sites/{siteId}/delete': {
+          authorizationType: apigateway.AuthorizationType.CUSTOM,
+          useAuthorizerLambda: true,
+        },
+        'v1/sites/{siteId}/stats/get': {
+          authorizationType: apigateway.AuthorizationType.CUSTOM,
+          useAuthorizerLambda: true,
+          // TODO create model
+        },
+        '/v1/sites/{siteId}/stats/post': {
+          // TODO create model
         },
       },
     };
@@ -82,6 +86,7 @@ export class SiteAnalyticsStack extends Stack {
     const api = new CrowApi(this, 'api', {
       ...finalCrowApiProps,
     });
+    this.api = api;
 
     connectDdbToLambdas(
       primaryTable,
@@ -96,6 +101,10 @@ export class SiteAnalyticsStack extends Stack {
       ],
       'PRIMARY_TABLE_NAME',
     );
+
+
+    primaryTable.grantFullAccess(api.authorizerLambda);
+    api.authorizerLambda.addEnvironment('PRIMARY_TABLE_NAME', primaryTable.tableName);
 
     /**************************************************************************
      *
@@ -163,7 +172,8 @@ export class SiteAnalyticsStack extends Stack {
       'POST',
       new apigateway.AwsIntegration({
         service: 'sns',
-        path: '/',
+        action: 'Publish',
+        // path: '/',
         integrationHttpMethod: 'POST',
         options: {
           credentialsRole: apiGatewayRole,
@@ -172,11 +182,12 @@ export class SiteAnalyticsStack extends Stack {
             'integration.request.header.Content-Type': "'application/x-www-form-urlencoded'" // TODO test out using json instead of form
           },
           requestTemplates: {
-            'application/json': `Action=Publish&TopicArn=$util.urlEncode(\'${snsTopic.topicArn}\')\
-&Message=$input.body\
-&MessageAttributes.entry.1.Name=operation\
-&MessageAttributes.entry.1.Value.DataType=String\
-&MessageAttributes.entry.1.Value.StringValue=postStats`,
+            'application/json': `{"TopicArn":"${snsTopic.topicArn}","Message":"$input.body","MessageAttributes":[{"Name":"operation","Value":{"DataType":"String","StringValue":"postStats"}}]}`,
+//             'application/json': `Action=Publish&TopicArn=$util.urlEncode(\'${snsTopic.topicArn}\')\
+// &Message=$input.body\
+// &MessageAttributes.entry.1.Name=operation\
+// &MessageAttributes.entry.1.Value.DataType=String\
+// &MessageAttributes.entry.1.Value.StringValue=postStats`,
           },
           integrationResponses: [
             {

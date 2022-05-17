@@ -1,10 +1,10 @@
 function constructAuth(event) {
   const {
-    userUniqueId,
+    uniqueId,
   } = event.requestContext.authorizer;
 
   return {
-    userUniqueId,
+    uniqueId,
   };
 }
 

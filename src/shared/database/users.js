@@ -3,6 +3,7 @@ const {
   PRIMARY_TABLE_NAME: TableName,
   USER_SORT_KEY: secondaryId,
 } = require('/opt/config');
+const { logger } = require('/opt/logger');
 
 /**
  * @enum {SiteListTypes}
@@ -26,10 +27,11 @@ async function create(id) {
     Item: {
       id,
       secondaryId,
-      owner: new Set([]),
-      admin: new Set([]),
-      writer: new Set([]),
-      reader: new Set([]),
+      // DDB does not allow empty sets
+      // owner: new Set([]),
+      // admin: new Set([]),
+      // writer: new Set([]),
+      // reader: new Set([]),
       created: now.toISOString(),
     },
     ConditionExpression: 'attribute_not_exists(id)',
@@ -42,10 +44,10 @@ async function create(id) {
  * @returns {Object} userData
  *                   {
  *                     id: string,
- *                     owner: string[],
- *                     admin: string[],
- *                     writer: string[],
- *                     reader: string[],
+ *                     owner?: Set<string>,
+ *                     admin?: Set<string>,
+ *                     writer?: Set<string>,
+ *                     reader?: Set<string>,
  *                     created: timestamp
  *                   }
  */

@@ -1,5 +1,4 @@
 const { logger } = require('/opt/logger');
-
 const { port } = require('./port');
 
 async function handler(event, context, callback) {
@@ -13,7 +12,7 @@ async function handler(event, context, callback) {
       } = record;
       // API Gateway is set up to send JSON of required path params
       const message = JSON.parse(stringifiedMessage);
-      logger.info(message);
+      logger.debug(message);
       const {
         calendarId,
         eventId,

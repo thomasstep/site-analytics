@@ -1,5 +1,5 @@
 {
-  "name": "shared",
+  "name": "syntheticssrc",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -10,8 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.87.0",
-    "@aws-sdk/lib-dynamodb": "^3.87.0",
-    "winston": "^3.7.2"
+    "axios": "^0.26.1"
   }
 }

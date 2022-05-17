@@ -1,4 +1,4 @@
-const { CREATED_STATUS_CODE } = require('/opt/config');
+const { GOOD_STATUS_CODE } = require('/opt/config');
 const {
   withErrorHandling,
 } = require('/opt/lambdaAdapterUtils');
@@ -12,7 +12,7 @@ async function handler(event) {
 
     const siteData = await port(auth, siteId);
     const data = {
-      statusCode: CREATED_STATUS_CODE,
+      statusCode: GOOD_STATUS_CODE,
       body: JSON.stringify({
         ...siteData,
       }),

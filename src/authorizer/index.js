@@ -1,5 +1,4 @@
 const jose = require('jose');
-const { jwtVerify } = require('jose/jwt/verify');
 const config = require('/opt/config');
 const { logger } = require('/opt/logger');
 const {
@@ -25,7 +24,7 @@ function generatePolicy(principalId, apiStageArn, userUniqueId /* userData */) {
 
   authResponse.policyDocument = policyDocument;
   authResponse.context = {
-    userUniqueId,
+    uniqueId: userUniqueId,
   };
   // authResponse.context = userData;
 
@@ -47,13 +46,12 @@ async function handler(event) {
       jwtClaims,
     } = config;
     const JWKS = jose.createRemoteJWKSet(new URL(jwksUrl));
-    const { payload } = await jwtVerify(token, JWKS, jwtClaims);
+    const { payload } = await jose.jwtVerify(token, JWKS, jwtClaims);
     const userId = payload[jwtUserIdKey];
 
     const userData = await readUser(userId);
-    if (!userData) {
+    if (!userData.id) {
       await createUser(userId);
-      throw new Error('User does not exist');
     }
 
     const policy = generatePolicy(userId, apiStageArn, userId);

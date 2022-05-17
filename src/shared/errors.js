@@ -15,6 +15,14 @@ class InputError extends Error {
   }
 }
 
+class MissingResourceError extends Error {
+  constructor(message) {
+    super(message);
+
+    this.name = 'MissingResourceError';
+  }
+}
+
 class MissingUniqueIdError extends Error {
   constructor(message) {
     super(message);
@@ -34,6 +42,7 @@ class UnauthorizedError extends Error {
 module.exports = {
   ApiKeyError,
   InputError,
+  MissingResourceError,
   MissingUniqueIdError,
   UnauthorizedError,
 };

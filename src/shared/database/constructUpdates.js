@@ -1,17 +1,26 @@
-const { logger } = require('../logger');
+const {
+  STATS_RETENTION_PERIOD,
+} = require('/opt/config');
+const { logger } = require('/opt/logger');
 
-function constructUpdates(body) {
+function constructStatsUpdates(body) {
   const updates = [];
   const attrNames = {};
   const attrValues = {};
 
   Object.entries(body).forEach(([key, value]) => {
     if (value) {
-      updates.push(`#${key} = :${key}`);
+      // Based on payload structure
+      // TODO make a model for this for API Gateway
+      updates.push(`#${key} = :${key} + 1`);
       attrNames[`#${key}`] = key;
       attrValues[`:${key}`] = value;
     }
   });
+
+  const ttl = Math.floor(Date.now() / 1000) + STATS_RETENTION_PERIOD;
+  const ttlUpdate = `SET ttl = if_not_exists(ttl, ${ttl})`;
+  updates.push(ttlUpdate);
 
   const params = {
     UpdateExpression: `SET ${updates.join(', ')}`,
@@ -19,10 +28,10 @@ function constructUpdates(body) {
     ExpressionAttributeValues: attrValues,
   };
 
-  logger.info('[constructUpdates] Result', { updates: params });
+  logger.debug('[constructStatsUpdates] Result', { updates: params });
   return params;
 }
 
 module.exports = {
-  constructUpdates,
+  constructStatsUpdates,
 };

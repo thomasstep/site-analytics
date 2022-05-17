@@ -10,3 +10,4 @@ cdk.out
 !.eslintrc.js
 !src/**/*.js
 !asyncSrc/**/*.js
+!syntheticsSrc/**/*.js

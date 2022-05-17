@@ -1,6 +1,7 @@
 const {
   MissingUniqueIdError,
 } = require('/opt/errors');
+const { logger } = require('/opt/logger');
 const { readUser } = require('/opt/ports');
 
 /**
@@ -15,16 +16,24 @@ async function logic(auth) {
     uniqueId,
   } = auth;
   if (!uniqueId) {
-    throw new MissingUniqueIdError('Unique ID not found while creating calendar', auth);
+    throw new MissingUniqueIdError('Unique ID not found', auth);
   }
 
   const userData = await readUser(uniqueId);
+  const {
+    owner = [],
+    admin = [],
+    writer = [],
+    reader = [],
+  } = userData;
+
   const sites = {
-    owner: userData.owner,
-    admin: userData.admin,
-    writer: userData.writer,
-    reader: userData.reader,
+    owner: Array.from(owner),
+    admin: Array.from(admin),
+    writer: Array.from(writer),
+    reader: Array.from(reader),
   };
+
   return sites;
 }
 

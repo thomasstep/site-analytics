@@ -1,6 +1,7 @@
 const sites = require('/opt/database/sites');
 const users = require('/opt/database/users');
 const {
+  MissingResourceError,
   UnauthorizedError,
 } = require('/opt/errors');
 
@@ -22,6 +23,10 @@ const operationTypes = {
  */
 async function authorizeUserForSite(uniqueId, siteId, operation) {
   const siteData = await sites.read(siteId);
+  if (!siteData.id) {
+    throw new MissingResourceError('Site not found');
+  }
+
   let isAuthorized = false;
 
   if (uniqueId === siteData.owner) {
@@ -45,7 +50,7 @@ async function authorizeUserForSite(uniqueId, siteId, operation) {
   }
 
   listsToCheck.forEach((list) => {
-    if (list.includes(uniqueId)) {
+    if (list && list.has(uniqueId)) {
       isAuthorized = true;
     }
   });
@@ -83,7 +88,9 @@ async function readUser(uniqueId) {
 
 async function deleteSite(uniqueId, siteId) {
   await authorizeUserForSite(uniqueId, siteId);
+  // TODO make final two calls parallel
   await sites.remove(siteId);
+  await users.removeSite(uniqueId, siteId, users.listTypes.OWNER);
 }
 
 module.exports = {

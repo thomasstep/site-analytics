@@ -18,8 +18,8 @@ async function logic(auth, url, name) {
     throw new MissingUniqueIdError('Unique ID not found while creating calendar', auth);
   }
 
-  const xxxxx = await createSite(uniqueId, url, name);
-  return xxxxx;
+  const siteId = await createSite(uniqueId, url, name);
+  return siteId;
 }
 
 module.exports = {

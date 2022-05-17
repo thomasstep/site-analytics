@@ -6,6 +6,8 @@ const {
 } = require('/opt/config');
 const { generateToken } = require('/opt/generateToken');
 
+/************* SITE OPERATIONS *************/
+
 /**
  *
  * @param {string} owner User ID for the owner
@@ -20,10 +22,6 @@ async function create(owner, url, name) {
       id: newSiteId,
       secondaryId: siteSecondaryId,
       owner,
-      admins: new Set([]),
-      writers: new Set([]),
-      readers: new Set([]),
-      emails: new Set([]),
       name: name || url,
       url,
       created: now.toISOString(),
@@ -40,11 +38,10 @@ async function create(owner, url, name) {
  * @returns {Object} siteData
  *                   {
  *                     id: string,
- *                     owner: string,
- *                     admins: string[],
- *                     writers: string[],
- *                     readers: string[],
- *                     readers: string[],
+ *                     owner?: string,
+ *                     admins?: Set<string>,
+ *                     writers?: Set<string>,
+ *                     readers?: Set<string>,
  *                     name: string,
  *                     url: string,
  *                     created: timestamp
@@ -82,6 +79,19 @@ async function remove(id) {
     },
   });
 }
+
+/************* STATS OPERATIONS *************/
+
+// async function addToStats(id, stats) {
+//   await documentClient.update({
+//     TableName,
+//     Key: {
+//       id,
+//       secondaryId: statsSecondaryId,
+//     },
+//     ...updateParams,
+//   });
+// }
 
 module.exports = {
   create,

@@ -121,6 +121,7 @@ Using a type of resource-based authorization where each individual resource (sit
   - Remove site to user's readers set
 - `POST` `/sites/{id}/stats`
   - Async
+  - TODO figure out payload structure
   - Adds to the site's statistics
   - Could use `Host` header to determine which site should get credit or the site's ID
 - `GET` `/sites/{id}/stats`

@@ -2,11 +2,13 @@ const {
   constructAuth,
 } = require('/opt/authUtils');
 const {
+  NOT_FOUND_STATUS_CODE,
   SERVER_ERROR_STATUS_CODE,
   UNAUTHENTICATED_STATUS_CODE,
   UNAUTHORIZED_STATUS_CODE,
 } = require('/opt/config');
 const {
+  MissingResourceError,
   MissingUniqueIdError,
   UnauthorizedError,
 } = require('/opt/errors');
@@ -31,6 +33,11 @@ function withErrorHandling(func) {
       logger.error(err);
       let statusCode = SERVER_ERROR_STATUS_CODE;
       let message = 'Internal server error';
+
+      if (err instanceof MissingResourceError) {
+        statusCode = NOT_FOUND_STATUS_CODE;
+        message = err.message;
+      }
 
       if (err instanceof MissingUniqueIdError) {
         statusCode = UNAUTHENTICATED_STATUS_CODE;

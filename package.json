@@ -17,6 +17,7 @@
     "@typescript-eslint/eslint-plugin": "^5.22.0",
     "@typescript-eslint/parser": "^5.22.0",
     "aws-cdk": "2.18.0",
+    "cdk-pigeon": "^0.1.0",
     "crow-api": "^2.4.0",
     "eslint": "^8.15.0",
     "eslint-config-airbnb-base": "^15.0.0",

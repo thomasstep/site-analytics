@@ -21,6 +21,15 @@ async function logic(auth, siteId) {
 
   const siteData = await readSite(uniqueId, siteId);
 
+  const {
+    admins = [],
+    writers = [],
+    readers = [],
+  } = siteData;
+  siteData.admins = Array.from(admins);
+  siteData.writers = Array.from(writers);
+  siteData.readers = Array.from(readers);
+
   return siteData;
 }
 
