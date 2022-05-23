@@ -3,6 +3,7 @@ import { Stack, StackProps, Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as logs from 'aws-cdk-lib/aws-logs';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { Pigeon } from 'cdk-pigeon';
 
@@ -50,6 +51,7 @@ export class PigeonStack extends Stack {
           'CROW_APP_SECRET': appSecret,
         },
         timeout: Duration.minutes(1),
+        logRetention: logs.RetentionDays.ONE_WEEK,
       },
       alertOnFailure: true,
       emailAddress: 'tstep916@gmail.com',

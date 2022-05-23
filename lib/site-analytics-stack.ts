@@ -168,26 +168,28 @@ export class SiteAnalyticsStack extends Stack {
      *
      *************************************************************************/
 
+
+    let postStatsMessage = `$util.urlEncode('{"siteId":"')$util.escapeJavaScript($input.params('siteId'))`;
+    postStatsMessage += `$util.urlEncode('","body":')$input.json('$')`;
+    postStatsMessage += `$util.urlEncode('}')`;
     statsResource.addMethod(
       'POST',
       new apigateway.AwsIntegration({
         service: 'sns',
-        action: 'Publish',
-        // path: '/',
+        path: '/',
         integrationHttpMethod: 'POST',
         options: {
           credentialsRole: apiGatewayRole,
           passthroughBehavior: apigateway.PassthroughBehavior.NEVER,
           requestParameters: {
-            'integration.request.header.Content-Type': "'application/x-www-form-urlencoded'" // TODO test out using json instead of form
+            'integration.request.header.Content-Type': "'application/x-www-form-urlencoded'",
           },
           requestTemplates: {
-            'application/json': `{"TopicArn":"${snsTopic.topicArn}","Message":"$input.body","MessageAttributes":[{"Name":"operation","Value":{"DataType":"String","StringValue":"postStats"}}]}`,
-//             'application/json': `Action=Publish&TopicArn=$util.urlEncode(\'${snsTopic.topicArn}\')\
-// &Message=$input.body\
-// &MessageAttributes.entry.1.Name=operation\
-// &MessageAttributes.entry.1.Value.DataType=String\
-// &MessageAttributes.entry.1.Value.StringValue=postStats`,
+            'application/json': `Action=Publish&TopicArn=$util.urlEncode(\'${snsTopic.topicArn}\')\
+&Message=${postStatsMessage}\
+&MessageAttributes.entry.1.Name=operation\
+&MessageAttributes.entry.1.Value.DataType=String\
+&MessageAttributes.entry.1.Value.StringValue=postStats`,
           },
           integrationResponses: [
             {

@@ -9,7 +9,7 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
-    "lint": "eslint --ext .js --ignore-pattern node_modules src/ asyncSrc/"
+    "lint": "eslint --ext .js --ignore-pattern node_modules src/ asyncSrc/ syntheticsSrc/"
   },
   "devDependencies": {
     "@types/jest": "^26.0.10",

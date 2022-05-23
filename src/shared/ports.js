@@ -28,7 +28,6 @@ async function authorizeUserForSite(uniqueId, siteId, operation) {
   }
 
   let isAuthorized = false;
-
   if (uniqueId === siteData.owner) {
     isAuthorized = true;
   }
@@ -66,6 +65,10 @@ async function authorizeUserForSite(uniqueId, siteId, operation) {
   });
 }
 
+async function addToStats(siteId, stats) {
+  await sites.addToStats(siteId, stats);
+}
+
 async function createSite(uniqueId, url, name) {
   const siteId = await sites.create(uniqueId, url, name);
   await users.addSite(uniqueId, siteId, users.listTypes.OWNER);
@@ -93,10 +96,21 @@ async function deleteSite(uniqueId, siteId) {
   await users.removeSite(uniqueId, siteId, users.listTypes.OWNER);
 }
 
+async function siteExists(siteId) {
+  const siteData = await sites.read(siteId);
+  if (siteData.id) {
+    return true;
+  }
+
+  return false;
+}
+
 module.exports = {
+  addToStats,
   createSite,
   createUser,
   readSite,
   readUser,
   deleteSite,
+  siteExists,
 };

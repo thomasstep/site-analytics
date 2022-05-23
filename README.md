@@ -119,9 +119,14 @@ Using a type of resource-based authorization where each individual resource (sit
   - Can only be done by the user themselves, owners, or admins
   - Remove user from site's readers set
   - Remove site to user's readers set
-- `POST` `/sites/{id}/stats`
+- `POST` `/sites/{id}/stats` (or PUT?)
   - Async
-  - TODO figure out payload structure
+  - Payload structure
+  {
+    "pageView": "<page-name>",
+    "<other-statistic>": "<identifier>",
+    ...
+  }
   - Adds to the site's statistics
   - Could use `Host` header to determine which site should get credit or the site's ID
 - `GET` `/sites/{id}/stats`

@@ -1,4 +1,5 @@
-const { documentClient } = require('./databaseSession');
+const { documentClient } = require('/opt/database/databaseSession');
+const { constructStatsUpdates } = require('/opt/database/constructUpdates');
 const {
   PRIMARY_TABLE_NAME: TableName,
   SITE_SORT_KEY: siteSecondaryId,
@@ -82,19 +83,21 @@ async function remove(id) {
 
 /************* STATS OPERATIONS *************/
 
-// async function addToStats(id, stats) {
-//   await documentClient.update({
-//     TableName,
-//     Key: {
-//       id,
-//       secondaryId: statsSecondaryId,
-//     },
-//     ...updateParams,
-//   });
-// }
+async function addToStats(id, stats) {
+  const updateParams = constructStatsUpdates(stats);
+  await documentClient.update({
+    TableName,
+    Key: {
+      id,
+      secondaryId: statsSecondaryId,
+    },
+    ...updateParams,
+  });
+}
 
 module.exports = {
   create,
   read,
   remove,
+  addToStats,
 };

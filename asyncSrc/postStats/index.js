@@ -1,7 +1,7 @@
 const { logger } = require('/opt/logger');
 const { port } = require('./port');
 
-async function handler(event, context, callback) {
+async function handler(event) {
   try {
     const recordPromises = [];
     event.Records.forEach((record) => {
@@ -14,14 +14,12 @@ async function handler(event, context, callback) {
       const message = JSON.parse(stringifiedMessage);
       logger.debug(message);
       const {
-        calendarId,
-        eventId,
-        body: eventChanges,
+        siteId,
+        body: stats,
       } = message;
       recordPromises.push(port(
-        calendarId,
-        eventId,
-        eventChanges,
+        siteId,
+        stats,
       ));
     });
 

@@ -12,6 +12,8 @@ const CONSTANTS = {
   SITE_SORT_KEY: 'site',
   STATS_SORT_KEY: 'stats',
   STATS_RETENTION_PERIOD: 2592000, // 30 days in seconds
+  OVERALL_PAGE_VIEW_ATTRIBUTE_NAME: 'overall',
+  TTL_ATTRIBUTE_NAME: 'ttl',
   // Status codes
   GOOD_STATUS_CODE: 200,
   CREATED_STATUS_CODE: 201,

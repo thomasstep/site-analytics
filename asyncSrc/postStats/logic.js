@@ -1,22 +1,22 @@
 const {
-  readEvent,
-  updateEvent,
+  addToStats,
+  siteExists,
 } = require('/opt/ports');
 
 /**
  *
- * @param {string} calendarId Internal calendar ID (constructed in API model)
- * @param {string} eventId Official event ID
- * @param {Object} eventChanges
- * @param {string} eventChanges.startTime ISO datetime
- * @param {string} eventChanges.endTime ISO datetime
- * @param {string} eventChanges.title Title of the event
+ * @param {string} siteId Site ID
+ * @param {Object} stats
+ * @param {string} stats.trackingItem Stat to track
  * @returns
  */
-async function logic(calendarId, eventId, eventChanges) {
-  // Hint: check database logic for DDB-specific event updating validation
-  // await updateEvent(calendarId, eventId, eventChanges);
-  return;
+async function logic(siteId, stats) {
+  const isSite = await siteExists(siteId);
+  if (!isSite) {
+    return;
+  }
+
+  await addToStats(siteId, stats);
 }
 
 module.exports = {
