@@ -15,6 +15,8 @@ const operationTypes = {
 };
 
 /**
+ * Returns site data if the authorization is successful.
+ * Throws an error if the user is unauthorized.
  *
  * @param {string} uniqueId
  * @param {string} siteId
@@ -79,6 +81,12 @@ async function createUser(uniqueId) {
   await users.create(uniqueId);
 }
 
+async function readFromStats(uniqueId, siteId, startDate, endDate) {
+  await authorizeUserForSite(uniqueId, siteId);
+  const statsByDate = sites.readStatsByDate(siteId, startDate, endDate);
+  return statsByDate;
+}
+
 async function readSite(uniqueId, siteId) {
   const siteData = await authorizeUserForSite(uniqueId, siteId);
   return siteData;
@@ -109,6 +117,7 @@ module.exports = {
   addToStats,
   createSite,
   createUser,
+  readFromStats,
   readSite,
   readUser,
   deleteSite,

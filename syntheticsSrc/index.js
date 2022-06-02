@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const assert = require('assert');
 const axios = require('axios');
 
@@ -8,15 +9,15 @@ const applicationSecret = process.env.CROW_APP_SECRET;
 const sitesEndpoint = 'v1/sites';
 const testEmail = 'test@test.com';
 const testUrl = 'test.com';
-const sleepTime = 5;
+// const sleepTime = 5;
 
-function sleep(sec) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, sec * 1000);
-  });
-}
+// function sleep(sec) {
+//   return new Promise((resolve) => {
+//     setTimeout(resolve, sec * 1000);
+//   });
+// }
 
-exports.handler = async function (event, context, callback) {
+async function handler() {
   try {
     // ************************************************************************
     console.log('Retrieving application JWT');
@@ -24,12 +25,12 @@ exports.handler = async function (event, context, callback) {
       method: 'post',
       url: `${crowAuthUrl}/v1/application/signin`,
       data: {
-        'applicationId': applicationId,
-        'applicationSecret': applicationSecret,
+        applicationId,
+        applicationSecret,
       },
     });
     assert.ok(
-      getApplicationJwt.status == 200,
+      getApplicationJwt.status === 200,
       'Wrong status while getting application JWT',
     );
     const {
@@ -52,12 +53,12 @@ exports.handler = async function (event, context, callback) {
         authorization: `Bearer ${applicationToken}`,
       },
       data: {
-        'email': testEmail,
-        'password': 'test',
-      }
+        email: testEmail,
+        password: 'test',
+      },
     });
     assert.ok(
-      getUserJwt.status == 200,
+      getUserJwt.status === 200,
       'Wrong status while getting user JWT',
     );
     const {
@@ -84,7 +85,7 @@ exports.handler = async function (event, context, callback) {
       },
     });
     assert.ok(
-      createSite.status == 201,
+      createSite.status === 201,
       `POST /sites status code not correct ${createSite.status}`,
     );
     const {
@@ -108,7 +109,7 @@ exports.handler = async function (event, context, callback) {
       },
     });
     assert.ok(
-      getSites.status == 200,
+      getSites.status === 200,
       `GET /sites status code not correct ${getSites.status}`,
     );
     assert.ok(
@@ -143,7 +144,7 @@ exports.handler = async function (event, context, callback) {
       },
     });
     assert.ok(
-      getSiteById.status == 200,
+      getSiteById.status === 200,
       `GET /sites/{siteId} status code not correct ${getSiteById.status}`,
     );
     assert.ok(
@@ -151,19 +152,19 @@ exports.handler = async function (event, context, callback) {
       'GET /sites/{siteId} response does not include created time',
     );
     assert.ok(
-      getSiteById.data.owner == testEmail,
+      getSiteById.data.owner === testEmail,
       `GET /sites/{siteId} response does not include correct owner ${getSiteById.data.owner}`,
     );
     assert.ok(
-      getSiteById.data.id == siteId,
+      getSiteById.data.id === siteId,
       `GET /sites/{siteId} response does not include correct site ID ${getSiteById.data.id}`,
     );
     assert.ok(
-      getSiteById.data.url == testUrl,
+      getSiteById.data.url === testUrl,
       `GET /sites/{siteId} response does not include correct URL ${getSiteById.data.url}`,
     );
     assert.ok(
-      getSiteById.data.name == testUrl,
+      getSiteById.data.name === testUrl,
       `GET /sites/{siteId} response does not include correct default name ${getSiteById.data.name}`,
     );
     assert.ok(
@@ -190,7 +191,7 @@ exports.handler = async function (event, context, callback) {
       },
     });
     assert.ok(
-      deleteSite.status == 204,
+      deleteSite.status === 204,
       `DELETE /sites status code not correct ${deleteSite.status}`,
     );
     console.log('PASSED');
@@ -205,7 +206,7 @@ exports.handler = async function (event, context, callback) {
       },
     });
     assert.ok(
-      getSitesDeletedSite.status == 200,
+      getSitesDeletedSite.status === 200,
       `GET /sites status code not correct ${getSitesDeletedSite.status}`,
     );
     assert.ok(
@@ -225,15 +226,18 @@ exports.handler = async function (event, context, callback) {
       validateStatus: null,
     });
     assert.ok(
-      getSiteByIdDeletedSite.status == 404,
+      getSiteByIdDeletedSite.status === 404,
       `GET /sites/{siteId} status code for missing site not correct ${getSiteByIdDeletedSite.status}`,
     );
     console.log('PASSED');
-
   } catch (uncaughtError) {
     console.error(uncaughtError);
     throw uncaughtError;
   }
 }
 
-// exports.handler()
+// handler()
+
+module.exports = {
+  handler,
+};

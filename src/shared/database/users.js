@@ -3,7 +3,6 @@ const {
   PRIMARY_TABLE_NAME: TableName,
   USER_SORT_KEY: secondaryId,
 } = require('/opt/config');
-const { logger } = require('/opt/logger');
 
 /**
  * @enum {SiteListTypes}

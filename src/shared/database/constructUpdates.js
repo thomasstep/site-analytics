@@ -1,9 +1,33 @@
 const {
-  OVERALL_PAGE_VIEW_ATTRIBUTE_NAME,
+  OVERALL_PAGE_VIEW_NAME,
+  PAGE_VIEW_STAT_NAME,
   STATS_RETENTION_PERIOD,
   TTL_ATTRIBUTE_NAME,
 } = require('/opt/config');
 const { logger } = require('/opt/logger');
+
+function constructEmptyMapUpdates(stats) {
+  const updates = [];
+  const attrNames = {};
+  const attrValues = {
+    ':emptyMap': {},
+  };
+
+  Object.entries(stats).forEach(([stat]) => {
+    const alphaNumKey = `#${stat.replace(/[^a-z0-9]/gi, '')}`;
+    updates.push(`${alphaNumKey} = if_not_exists(${alphaNumKey}, :emptyMap)`);
+    attrNames[alphaNumKey] = stat;
+  });
+
+  const params = {
+    UpdateExpression: `SET ${updates.join(', ')}`,
+    ExpressionAttributeNames: attrNames,
+    ExpressionAttributeValues: attrValues,
+  };
+
+  logger.debug('[constructEmptyMapUpdates] Result', { updates: params });
+  return params;
+}
 
 function constructStatsUpdates(body) {
   const updates = [];
@@ -13,26 +37,24 @@ function constructStatsUpdates(body) {
     ':one': 1,
   };
 
-  if (body.pageView) {
-    const pageView = 'pageView';
-    const alphaNumKey = `#${pageView.replace(/[^a-z0-9]/gi, '')}`;
-    const alphaNumValue = `#${OVERALL_PAGE_VIEW_ATTRIBUTE_NAME.replace(/[^a-z0-9]/gi, '')}`;
+  function addOne(stat, value) {
+    const alphaNumKey = `#${stat.replace(/[^a-z0-9]/gi, '')}`;
+    const alphaNumValue = `#${value.replace(/[^a-z0-9]/gi, '')}`;
     const attrName = `${alphaNumKey}.${alphaNumValue}`;
     updates.push(`${attrName} = if_not_exists(${attrName}, :zero) + :one`);
-    attrNames[alphaNumKey] = pageView;
-    attrNames[alphaNumValue] = OVERALL_PAGE_VIEW_ATTRIBUTE_NAME;
+    attrNames[alphaNumKey] = stat;
+    attrNames[alphaNumValue] = value;
+  }
+
+  if (body.pageView) {
+    addOne(PAGE_VIEW_STAT_NAME, OVERALL_PAGE_VIEW_NAME);
   }
 
   Object.entries(body).forEach(([key, value]) => {
     if (value) {
       // Based on payload structure
       // TODO make a model for this for API Gateway
-      const alphaNumKey = `#${key.replace(/[^a-z0-9]/gi, '')}`;
-      const alphaNumValue = `#${value.replace(/[^a-z0-9]/gi, '')}`;
-      const attrName = `${alphaNumKey}.${alphaNumValue}`;
-      updates.push(`${attrName} = if_not_exists(${attrName}, :zero) + :one`);
-      attrNames[alphaNumKey] = key;
-      attrNames[alphaNumValue] = value;
+      addOne(key, value);
     }
   });
 
@@ -40,7 +62,7 @@ function constructStatsUpdates(body) {
 
   attrNames['#ttl'] = TTL_ATTRIBUTE_NAME;
   attrValues[':ttl'] = ttl;
-  const ttlUpdate = `#ttl = if_not_exists(#ttl, :ttl)`;
+  const ttlUpdate = '#ttl = if_not_exists(#ttl, :ttl)';
   updates.push(ttlUpdate);
 
   const params = {
@@ -54,5 +76,6 @@ function constructStatsUpdates(body) {
 }
 
 module.exports = {
+  constructEmptyMapUpdates,
   constructStatsUpdates,
 };

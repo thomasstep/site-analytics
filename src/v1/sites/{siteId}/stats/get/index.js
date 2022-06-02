@@ -1,4 +1,4 @@
-const { CREATED_STATUS_CODE } = require('/opt/config');
+const { GOOD_STATUS_CODE } = require('/opt/config');
 const {
   withErrorHandling,
 } = require('/opt/lambdaAdapterUtils');
@@ -8,14 +8,19 @@ const { port } = require('./port');
 async function handler(event) {
   // eslint-disable-next-line no-shadow
   const result = await withErrorHandling(async (event, auth) => {
-    const body = JSON.parse(event.body);
+    const { siteId } = event.pathParameters;
+    // TODO make model for API Gateway
+    // These are required query string parameters as defined
+    //   in the API Gateway models for this endpoint
+    const {
+      startDate,
+      endDate,
+    } = event.queryStringParameters;
 
-    const xxxxxx = await port(auth, body);
+    const statsByDate = await port(auth, siteId, startDate, endDate);
     const data = {
-      statusCode: CREATED_STATUS_CODE,
-      body: JSON.stringify({
-        id: xxxxxx,
-      }),
+      statusCode: GOOD_STATUS_CODE,
+      body: JSON.stringify(statsByDate),
     };
     return data;
   })(event);

@@ -71,15 +71,15 @@ Using a type of resource-based authorization where each individual resource (sit
 
 #### API Design
 
-- `POST` `/sites`
+- `POST` `/sites` (DONE)
   - Create Site ID and item
   - Add site to user's owner set
   - Response: Site ID
-- `GET` `/sites`
+- `GET` `/sites` (DONE)
   - Return user's profile data
   - Response: Lists of sites user has access to
-- `GET` `/sites/{id}`
-  - Response: Site item in DDB; site's view count/other statistics, emails, URL, name
+- `GET` `/sites/{id}` (DONE)
+  - Response: Site item in DDB
 - `PUT` `/sites/{id}/owner` (future)
   - Async
   - Request: new owner's user ID
@@ -119,7 +119,7 @@ Using a type of resource-based authorization where each individual resource (sit
   - Can only be done by the user themselves, owners, or admins
   - Remove user from site's readers set
   - Remove site to user's readers set
-- `POST` `/sites/{id}/stats` (or PUT?)
+- `POST` `/sites/{id}/stats` (DONE)
   - Async
   - Payload structure
   {
@@ -128,7 +128,7 @@ Using a type of resource-based authorization where each individual resource (sit
     ...
   }
   - Adds to the site's statistics
-  - Could use `Host` header to determine which site should get credit or the site's ID
+  - Could use `Host` header to determine which site should get credit or the site's ID (future)
 - `GET` `/sites/{id}/stats`
   - Query parameters: start date, end date
   - Reads the site's statistics for given days
@@ -140,7 +140,7 @@ Using a type of resource-based authorization where each individual resource (sit
 - `DELETE` `/sites/{id}/email/{address}` (future)
   - Async
   - Removes email to snapshot list
-- `DELETE` `/sites/{id}`
+- `DELETE` `/sites/{id}` (DONE)
   - Deletes site and all data
     - If data is not being archived
       - Reads site's created date

@@ -72,7 +72,7 @@ export class SiteAnalyticsStack extends Stack {
           authorizationType: apigateway.AuthorizationType.CUSTOM,
           useAuthorizerLambda: true,
         },
-        'v1/sites/{siteId}/stats/get': {
+        '/v1/sites/{siteId}/stats/get': {
           authorizationType: apigateway.AuthorizationType.CUSTOM,
           useAuthorizerLambda: true,
           // TODO create model

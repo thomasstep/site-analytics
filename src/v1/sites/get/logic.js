@@ -1,7 +1,6 @@
 const {
   MissingUniqueIdError,
 } = require('/opt/errors');
-const { logger } = require('/opt/logger');
 const { readUser } = require('/opt/ports');
 
 /**

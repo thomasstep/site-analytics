@@ -9,7 +9,8 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
-    "lint": "eslint --ext .js --ignore-pattern node_modules src/ asyncSrc/ syntheticsSrc/"
+    "lint": "eslint --ext .js --ignore-pattern node_modules src/ asyncSrc/ syntheticsSrc/",
+    "deploy": "npm run lint && cdk deploy --all"
   },
   "devDependencies": {
     "@types/jest": "^26.0.10",
