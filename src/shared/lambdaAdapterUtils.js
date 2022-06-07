@@ -1,13 +1,17 @@
+const AWSXRay = require('aws-xray-sdk-core');
+const AWS = AWSXRay.captureAWS(require('aws-sdk'));
 const {
   constructAuth,
 } = require('/opt/authUtils');
 const {
+  BAD_INPUT_STATUS_CODE,
   NOT_FOUND_STATUS_CODE,
   SERVER_ERROR_STATUS_CODE,
   UNAUTHENTICATED_STATUS_CODE,
   UNAUTHORIZED_STATUS_CODE,
 } = require('/opt/config');
 const {
+  InputError,
   MissingResourceError,
   MissingUniqueIdError,
   UnauthorizedError,
@@ -33,6 +37,11 @@ function withErrorHandling(func) {
       logger.error(err);
       let statusCode = SERVER_ERROR_STATUS_CODE;
       let message = 'Internal server error';
+
+      if (err instanceof InputError) {
+        statusCode = BAD_INPUT_STATUS_CODE;
+        message = err.message;
+      }
 
       if (err instanceof MissingResourceError) {
         statusCode = NOT_FOUND_STATUS_CODE;

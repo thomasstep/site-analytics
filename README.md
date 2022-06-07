@@ -63,6 +63,8 @@ Using a type of resource-based authorization where each individual resource (sit
 
 ### API Layer
 
+Code for the API layer is contained in the `/src` and `/asyncSrc` folders.
+
 - API Gateway and Lambda/service proxy integrations (SNS and/or SQS for async calls)
   - Level of async absorption to be configuration item
     - Without Queue: SNS -> Lambda -> DDB (MVP)
@@ -122,11 +124,11 @@ Using a type of resource-based authorization where each individual resource (sit
 - `POST` `/sites/{id}/stats` (DONE)
   - Async
   - Payload structure
-  {
-    "pageView": "<page-name>",
-    "<other-statistic>": "<identifier>",
-    ...
-  }
+    {
+      "pageView": "<page-name>",
+      "<other-statistic>": "<identifier>",
+      ...
+    }
   - Adds to the site's statistics
   - Could use `Host` header to determine which site should get credit or the site's ID (future)
 - `GET` `/sites/{id}/stats`
@@ -153,7 +155,9 @@ Using a type of resource-based authorization where each individual resource (sit
 
 ### Presentation Layer
 
-Hosted in S3 through CloudFront using basic HTML, CSS, and [Alpine.js](https://github.com/alpinejs/alpine) to help with interactivity.
+Code for the presentation layer is contained in the `/site` folder.
+
+Hosted in S3 through CloudFront using basic HTML, CSS, and [Alpine.js](https://github.com/alpinejs/alpine) to help with interactivity. Charts for the site statistics will be handled using [Chart.js](https://www.chartjs.org/).
 
 Pages:
   - Sign In
@@ -162,7 +166,8 @@ Pages:
   - Profile
     - Shows sites
   - Site statistics per site ID
-    - Graphs and such
+    - Overall page views graph
+    - Graph per statistic with different lines for the top 10 values
 
 ### Email Snapshot
 

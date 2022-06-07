@@ -9,13 +9,11 @@ async function handler(event) {
   // eslint-disable-next-line no-shadow
   const result = await withErrorHandling(async (event, auth) => {
     const { siteId } = event.pathParameters;
-    // TODO make model for API Gateway
-    // These are required query string parameters as defined
+    // These are not required query string parameters as defined
     //   in the API Gateway models for this endpoint
-    const {
-      startDate,
-      endDate,
-    } = event.queryStringParameters;
+    // Validation happens in the port
+    const startDate = event?.queryStringParameters?.startDate;
+    const endDate = event?.queryStringParameters?.endDate;
 
     const statsByDate = await port(auth, siteId, startDate, endDate);
     const data = {

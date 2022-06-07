@@ -31,7 +31,7 @@ interface ISiteAnalyticsStackProps extends StackProps {
   crowApiProps: CrowApiProps,
 }
 
-export class SiteAnalyticsStack extends Stack {
+export class Api extends Stack {
   public api!: CrowApi;
   constructor(scope: Construct, id: string, props: ISiteAnalyticsStackProps) {
     super(scope, id, props);
@@ -47,39 +47,47 @@ export class SiteAnalyticsStack extends Stack {
       sqsQueue = new sqs.Queue(this, 'queue');
     }
 
-    // TODO check config for useAuthorization
-    // config.useAuthorization
+    let authorizationConfig = {};
+    if (config.useAuthorization) {
+      authorizationConfig = {
+        authorizationType: apigateway.AuthorizationType.CUSTOM,
+        useAuthorizerLambda: true,
+      };
+    }
     const finalCrowApiProps = {
       ...crowApiProps,
       methodConfigurations: {
         '/v1/sites/post': {
-          authorizationType: apigateway.AuthorizationType.CUSTOM,
-          useAuthorizerLambda: true,
+          ...authorizationConfig,
           requestModels: {
             'application/json': 'createSite',
           },
           requestValidator: 'validateBody',
         },
         '/v1/sites/get': {
-          authorizationType: apigateway.AuthorizationType.CUSTOM,
-          useAuthorizerLambda: true,
+          ...authorizationConfig,
         },
         '/v1/sites/{siteId}/get': {
-          authorizationType: apigateway.AuthorizationType.CUSTOM,
-          useAuthorizerLambda: true,
+          ...authorizationConfig,
         },
         '/v1/sites/{siteId}/delete': {
-          authorizationType: apigateway.AuthorizationType.CUSTOM,
-          useAuthorizerLambda: true,
+          ...authorizationConfig,
         },
         '/v1/sites/{siteId}/stats/get': {
-          authorizationType: apigateway.AuthorizationType.CUSTOM,
-          useAuthorizerLambda: true,
-          // TODO create model
+          ...authorizationConfig,
+          requestParameters: {
+            'method.request.querystring.startDate': false,
+            'method.request.querystring.endDate': false,
+          },
+          requestValidator: 'validateParams',
         },
-        '/v1/sites/{siteId}/stats/post': {
-          // TODO create model
-        },
+        // Defined below
+        // '/v1/sites/{siteId}/stats/post': {
+        //   requestModels: {
+        //     'application/json': 'createStats',
+        //   },
+        //   requestValidator: 'validateBody',
+        // },
       },
     };
 
@@ -209,7 +217,13 @@ export class SiteAnalyticsStack extends Stack {
           ],
         },
       }),
-      defaultMethodOptions,
+      {
+        ...defaultMethodOptions,
+        requestModels: {
+          'application/json': api.models.createStats,
+        },
+        requestValidator: api.requestValidators.validateBody,
+      },
     );
 
     let layers: lambda.ILayerVersion[] | undefined;

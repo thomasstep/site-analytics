@@ -7,15 +7,17 @@ const crowAuthUrl = process.env.CROW_AUTH_URL;
 const applicationId = process.env.CROW_APP_ID;
 const applicationSecret = process.env.CROW_APP_SECRET;
 const sitesEndpoint = 'v1/sites';
+const statsEndpoint = '/stats';
 const testEmail = 'test@test.com';
 const testUrl = 'test.com';
-// const sleepTime = 5;
+const [today] = new Date().toISOString().split('T');
+const sleepTime = 5;
 
-// function sleep(sec) {
-//   return new Promise((resolve) => {
-//     setTimeout(resolve, sec * 1000);
-//   });
-// }
+function sleep(sec) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, sec * 1000);
+  });
+}
 
 async function handler() {
   try {
@@ -179,6 +181,57 @@ async function handler() {
       getSiteById.data.readers,
       'GET /sites/{siteId} response does not include readers',
     );
+    console.log('PASSED');
+
+    // ************************************************************************
+    console.log('Add to stats');
+    const addStats = await axios({
+      method: 'post',
+      url: `${url}${sitesEndpoint}/${siteId}${statsEndpoint}`,
+      headers: {
+        authorization: `Bearer ${userToken}`,
+      },
+      data: {
+        pageView: '/frompigeon',
+      },
+    });
+    assert.ok(
+      addStats.status === 202,
+      `POST /stats status code not correct ${addStats.status}`,
+    );
+    console.log('PASSED');
+
+    // ************************************************************************
+    console.log('Read stats');
+
+    console.log(`Sleep ${sleepTime} seconds to give the API time to count the stat`);
+    await sleep(sleepTime);
+
+    const readStats = await axios({
+      method: 'get',
+      url: `${url}${sitesEndpoint}/${siteId}${statsEndpoint}`,
+      headers: {
+        authorization: `Bearer ${userToken}`,
+      },
+    });
+    assert.ok(
+      readStats.status === 200,
+      `GET /stats status code not correct ${readStats.status}`,
+    );
+    assert.ok(
+      readStats.data[today],
+      'GET /stats response does not include today in the data',
+    );
+    assert.ok(
+      readStats.data[today].pageView,
+      'GET /stats response does not include pageView in today\'s stats',
+    );
+    assert.ok(
+      readStats.data[today].pageView['/frompigeon'] >= 1,
+      'GET /stats response does not include correct page view in pageView in today\'s stats',
+    );
+    console.log('Read stats payload:');
+    console.log(readStats.data);
     console.log('PASSED');
 
     // ************************************************************************

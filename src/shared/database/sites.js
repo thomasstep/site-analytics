@@ -154,7 +154,6 @@ async function readStatsByDate(id, startDateString, endDateString) {
   const stats = await documentClient.batchGet(batchGetItemRequest);
 
   const statsByDate = {};
-  logger.debug(stats);
   stats.Responses[TableName].forEach((stat) => {
     const hashParts = stat.id.split('#');
     const date = hashParts[hashParts.length - 1];

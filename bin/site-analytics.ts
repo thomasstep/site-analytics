@@ -3,17 +3,26 @@ import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { TablesStack } from '../lib/site-analytics-tables-stack';
-import { SiteAnalyticsStack } from '../lib/site-analytics-stack';
-import { PigeonStack } from '../lib/site-analytics-pigeon';
+import { Tables } from '../lib/site-analytics-tables';
+import { Api } from '../lib/site-analytics-api';
+import { FrontEnd } from '../lib/site-analytics-front-end';
+import { Monitor } from '../lib/site-analytics-monitor';
 
 const app = new cdk.App();
-const devTables = new TablesStack(app, 'site-analytics-tables-dev');
-const devApi = new SiteAnalyticsStack(app, 'site-analytics-api-dev', {
+const devTables = new Tables(app, 'site-analytics-tables-dev');
+const devApi = new Api(app, 'site-analytics-api-dev', {
   primaryTable: devTables.primaryTable,
   crowApiProps: {
     apiGatewayName: 'site-analytics-dev',
     useAuthorizerLambda: true,
+    lambdaIntegrationOptions: {
+      '/v1/sites/{siteId}/stats/get': {
+        requestParameters: {
+          'integration.request.querystring.startDate': 'method.request.querystring.startDate',
+          'integration.request.querystring.endDate': 'method.request.querystring.endDate',
+        },
+      },
+    },
     models: [
       {
         modelName: 'createSite',
@@ -31,6 +40,22 @@ const devApi = new SiteAnalyticsStack(app, 'site-analytics-api-dev', {
               type: apigateway.JsonSchemaType.STRING,
             },
           },
+          additionalProperties: false,
+        },
+      },
+      {
+        modelName: 'createStats',
+        schema: {
+          schema: apigateway.JsonSchemaVersion.DRAFT4,
+          title: '/v1/sites/{siteId}/stats/post',
+          type: apigateway.JsonSchemaType.OBJECT,
+          // Body must be map[string]string
+          patternProperties: {
+            "^[a-zA-Z]+$": {
+              type: apigateway.JsonSchemaType.STRING,
+            },
+          },
+          // Any stats wanting to be collected can be
           additionalProperties: false,
         },
       },
@@ -72,7 +97,8 @@ const devApi = new SiteAnalyticsStack(app, 'site-analytics-api-dev', {
     // }
   },
 });
-new PigeonStack(app, 'site-analytics-pigeon-dev', {
+new FrontEnd(app, 'site-analytics-front-end-dev', {});
+new Monitor(app, 'site-analytics-monitor-dev', {
   appIdParameter: '/site-analytics-api-dev/crow-app-id',
   appSecretParameter: '/site-analytics-api-dev/crow-app-secret',
   url: devApi.api.gateway.url,

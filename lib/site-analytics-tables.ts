@@ -2,7 +2,7 @@ import { Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 
-export class TablesStack extends Stack {
+export class Tables extends Stack {
   /**
    *
    * @param {cdk.Construct} scope

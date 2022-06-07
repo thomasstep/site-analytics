@@ -13,7 +13,7 @@ interface IPigeonStackProps extends StackProps {
   url: string,
 }
 
-export class PigeonStack extends Stack {
+export class Monitor extends Stack {
   /**
    *
    * @param {cdk.Construct} scope
