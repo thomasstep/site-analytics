@@ -15,6 +15,36 @@ const contents = fse.readFileSync(filePath, 'utf8');
 const config = JSON.parse(contents);
 const { templateValues } = config;
 
+/**
+ * templateDirectory is the top level directory where all the templates are stored
+ * currentChildDirectory is the current path underneath the templateDirectory that we are processing
+ * htmlDirectory is where processed HTML templates should be written
+ */
+function processHtmlTemplates(templateDirectory: string, currentChildDirectory: string, htmlDirectory: string) {
+    const currentDirectory = `${templateDirectory}${currentChildDirectory}`;
+    const directoryEntries = fse.readdirSync(currentDirectory, { withFileTypes: true });
+    // Only want to template and copy over .html files
+    const files = directoryEntries
+      .filter((dirent: any) => dirent.isFile() && dirent.name.endsWith('.html'))
+      .map((dirent: any) => dirent.name);
+    const directories = directoryEntries
+      .filter((dirent: any) => dirent.isDirectory())
+      .map((dirent: any) => dirent.name);
+    files.forEach((file) => {
+      const templatePath = `${currentDirectory}/${file}`;
+      const htmlChildDirectory = `${htmlDirectory}${currentChildDirectory}`;
+      const htmlPath = `${htmlChildDirectory}/${file}`;
+      const template = fse.readFileSync(templatePath, 'utf8');
+      const staticPage = mustache.render(template, templateValues);
+      fse.mkdirSync(htmlChildDirectory, { recursive: true });
+      fse.writeFileSync(htmlPath, staticPage);
+    });
+    directories.forEach((directory) => {
+      // Recursion stops when the file tree ends
+      processHtmlTemplates(templateDirectory, `${currentChildDirectory}/${directory}`, htmlDirectory);
+    });
+}
+
 export class FrontEnd extends Stack {
   /**
    *
@@ -51,22 +81,9 @@ export class FrontEnd extends Stack {
     });
 
     // Preprocess with mustache.js
-    // TODO turn this into a recursive function whenever the directory has deeper paths
     const templateDirectory = 'siteTemplates';
     const htmlDirectory = 'site';
-    const files = fse.readdirSync(templateDirectory, { withFileTypes: true })
-      .filter((dirent: any) => dirent.isFile())
-      .map((dirent: any) => dirent.name);
-    console.log(files)
-    files.forEach((file) => {
-      // File should be a .html; otherwise, it's a directory
-      const templatePath = `${templateDirectory}/${file}`;
-      const htmlPath = `${htmlDirectory}/${file}`;
-      const template = fse.readFileSync(templatePath, 'utf8');
-      console.log(templateValues);
-      const staticPage = mustache.render(template, templateValues);
-      fse.writeFileSync(htmlPath, staticPage);
-    });
+    processHtmlTemplates(templateDirectory, '', htmlDirectory);
 
     const deployment = new s3Deploy.BucketDeployment(this, 'site-analytics-site-deployment', {
       sources: [s3Deploy.Source.asset(htmlDirectory)],
