@@ -1,5 +1,15 @@
 # Site Analytics
 
+## Getting Started
+
+```bash
+npm install
+cdk synth
+cdk deploy --all
+```
+
+Adjust values in `config.json` as needed. More information about the config values can be found in the [config section](#config).
+
 ## Config
 
 - `useSqs` tells AWS to create SQS Queues between the SNS topic and Lambdas to absorb traffic spikes better.
@@ -8,6 +18,7 @@
 - `jwksUrl` this is the URL of the JWKS that should be used to verify the JWT presented to the API.
 - `jwtUserUniqueIdKey` this is the key that corresponds to a user's unique identifier in a JWT's payload, which is used for authorization purposes.
 - `jwtClaims` this is an object that corresponds to the claims that a JWT should be verified against. Should follow the format of [`jose`'s `jwtverify`](https://github.com/panva/jose/blob/main/docs/interfaces/jwt_verify.JWTVerifyOptions.md).
+- `templateValues` this is an object containing values used while preprocessing the temlpated HTML in the `/siteTemplates` folder. See the (Presentation Layer section)[#presentation-layer] for more information.
 
 ## Design
 
@@ -155,19 +166,23 @@ Code for the API layer is contained in the `/src` and `/asyncSrc` folders.
 
 ### Presentation Layer
 
-Code for the presentation layer is contained in the `/site` folder.
+Code for the presentation layer is contained in the `/site` and `/siteTemplates` folders. Any HTML that needs to be templated should be written in the `/siteTemplates` folder which will be preprocessed using [Mustache.js](https://github.com/janl/mustache.js) and then written to the `/site` folder.
 
 Hosted in S3 through CloudFront using basic HTML, CSS, and [Alpine.js](https://github.com/alpinejs/alpine) to help with interactivity. Charts for the site statistics will be handled using [Chart.js](https://www.chartjs.org/).
 
 Pages:
-  - Sign In
   - Sign Up
+  - Verify
+  - Sign In
   - Reset Password
   - Profile
     - Shows sites
-  - Site statistics per site ID
+    - Corresponds to `/sites` and `/sites/{siteId}`
+  - Statistics
+    - Query parameter for `siteId` gives link per site
     - Overall page views graph
     - Graph per statistic with different lines for the top 10 values
+    - Corresponds to `/sites` and `/sites/{siteId}/stats`
 
 ### Email Snapshot
 

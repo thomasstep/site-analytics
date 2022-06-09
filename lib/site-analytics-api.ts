@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+import * as fs from 'fs';
+import * as path from 'path';
 
 import { Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';

@@ -1,9 +1,19 @@
+import * as path from 'path';
+
 import { Stack, StackProps, Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3Deploy from 'aws-cdk-lib/aws-s3-deployment';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as cloudfrontOrigins from 'aws-cdk-lib/aws-cloudfront-origins';
+
+import * as fse from 'fs-extra';
+import * as mustache from 'mustache';
+
+const filePath = path.join(process.cwd(), 'config.json');
+const contents = fse.readFileSync(filePath, 'utf8');
+const config = JSON.parse(contents);
+const { templateValues } = config;
 
 export class FrontEnd extends Stack {
   /**
@@ -40,8 +50,26 @@ export class FrontEnd extends Stack {
       websiteErrorDocument: '404.html',
     });
 
+    // Preprocess with mustache.js
+    // TODO turn this into a recursive function whenever the directory has deeper paths
+    const templateDirectory = 'siteTemplates';
+    const htmlDirectory = 'site';
+    const files = fse.readdirSync(templateDirectory, { withFileTypes: true })
+      .filter((dirent: any) => dirent.isFile())
+      .map((dirent: any) => dirent.name);
+    console.log(files)
+    files.forEach((file) => {
+      // File should be a .html; otherwise, it's a directory
+      const templatePath = `${templateDirectory}/${file}`;
+      const htmlPath = `${htmlDirectory}/${file}`;
+      const template = fse.readFileSync(templatePath, 'utf8');
+      console.log(templateValues);
+      const staticPage = mustache.render(template, templateValues);
+      fse.writeFileSync(htmlPath, staticPage);
+    });
+
     const deployment = new s3Deploy.BucketDeployment(this, 'site-analytics-site-deployment', {
-      sources: [s3Deploy.Source.asset('site')],
+      sources: [s3Deploy.Source.asset(htmlDirectory)],
       destinationBucket: primaryBucket,
     });
 

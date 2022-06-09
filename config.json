@@ -5,5 +5,8 @@
   "jwtUserIdKey": "email",
   "jwtClaims": {
     "maxTokenAge": 21600
+  },
+  "templateValues": {
+    "CLIENT_ID": "asdf"
   }
 }
