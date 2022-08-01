@@ -54,7 +54,7 @@ Using a type of resource-based authorization where each individual resource (sit
 
 #### Data Model
 
-| Partition key       | Secondary key | { Attributes } |
+| Partition key       | Secondary key | Attributes     |
 | ------------------- | ------------- | -------------- |
 | `<user-id>`         | `profile`     | `{ owner: string[], admin: string[], writer: string[], reader: string[], created: timestamp }` |
 | `<site-id>`         | `site`        | `{ owner: string, admins: string[], writers: string[], readers: string[], emails: string[], name: string, url: string, created: timestamp }` |
@@ -84,55 +84,55 @@ Code for the API layer is contained in the `/src` and `/asyncSrc` folders.
 
 #### API Design
 
-- `POST` `/sites` (DONE)
+- `POST /sites` (DONE)
   - Create Site ID and item
   - Add site to user's owner set
   - Response: Site ID
-- `GET` `/sites` (DONE)
+- `GET /sites` (DONE)
   - Return user's profile data
   - Response: Lists of sites user has access to
-- `GET` `/sites/{id}` (DONE)
+- `GET /sites/{id}` (DONE)
   - Response: Site item in DDB
-- `PUT` `/sites/{id}/owner` (future)
+- `PUT /sites/{id}/owner` (future)
   - Async
   - Request: new owner's user ID
   - Has to be done by the owner
   - Adds user as site's owner
   - Adds site to user's owner set
-- `POST` `/sites/{id}/admins/{user-id}` (near future)
+- `POST /sites/{id}/admins/{user-id}` (near future)
   - Async
   - Can only be done by owners and admins
   - Check that there is at least one other owner
   - Remove user from site's admins set
   - Remove site to user's admins set
-- `DELETE` `/sites/{id}/admins/{user-id}` (near future)
+- `DELETE /sites/{id}/admins/{user-id}` (near future)
   - Async
   - Can only be done by the user themselves, owners, or admins
   - Remove user from site's admins set
   - Remove site to user's admins set
-- `POST` `/sites/{id}/writers/{user-id}` (future)
+- `POST /sites/{id}/writers/{user-id}` (future)
   - Async
   - Can only be done by owners and admins
   - Check that there is at least one other owner
   - Remove user from site's writers set
   - Remove site to user's writers set
-- `DELETE` `/sites/{id}/writers/{user-id}` (future)
+- `DELETE /sites/{id}/writers/{user-id}` (future)
   - Async
   - Can only be done by the user themselves, owners, or admins
   - Remove user from site's writers set
   - Remove site to user's writers set
-- `POST` `/sites/{id}/readers/{user-id}` (future)
+- `POST /sites/{id}/readers/{user-id}` (future)
   - Async
   - Can only be done by owners and admins
   - Check that there is at least one other owner
   - Remove user from site's readers set
   - Remove site to user's readers set
-- `DELETE` `/sites/{id}/readers/{user-id}` (future)
+- `DELETE /sites/{id}/readers/{user-id}` (future)
   - Async
   - Can only be done by the user themselves, owners, or admins
   - Remove user from site's readers set
   - Remove site to user's readers set
-- `POST` `/sites/{id}/stats` (DONE)
+- `POST /sites/{id}/stats` (DONE)
   - Async
   - Payload structure
     {
@@ -142,18 +142,18 @@ Code for the API layer is contained in the `/src` and `/asyncSrc` folders.
     }
   - Adds to the site's statistics
   - Could use `Host` header to determine which site should get credit or the site's ID (future)
-- `GET` `/sites/{id}/stats`
+- `GET /sites/{id}/stats`
   - Query parameters: start date, end date
   - Reads the site's statistics for given days
   - Only retrieve up to 7 days (MVP)
   - Paginate results for larger datasets (future)
-- `POST` `/sites/{id}/email/{address}` (future)
+- `POST /sites/{id}/email/{address}` (future)
   - Async
   - Adds email to snapshot list
-- `DELETE` `/sites/{id}/email/{address}` (future)
+- `DELETE /sites/{id}/email/{address}` (future)
   - Async
   - Removes email to snapshot list
-- `DELETE` `/sites/{id}` (DONE)
+- `DELETE /sites/{id}` (DONE)
   - Deletes site and all data
     - If data is not being archived
       - Reads site's created date

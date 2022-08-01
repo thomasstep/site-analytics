@@ -1,12 +1,14 @@
 {
   "useSqs": false,
   "useAuthorization": true,
-  "jwksUrl": "https://crowauth.thomasstep.com/v1/jwks.json",
+  "jwksUrl": "https://kelxh6t44h.execute-api.us-east-1.amazonaws.com/prod/v1/applications/ebcf1967-94d6-4fe1-9f28-323614e4e1a1/jwks.json",
   "jwtUserIdKey": "email",
   "jwtClaims": {
     "maxTokenAge": 21600
   },
   "templateValues": {
-    "CLIENT_ID": "asdf"
+    "AUTHENTICATION_SERVICE_URL": "https://kelxh6t44h.execute-api.us-east-1.amazonaws.com/prod",
+    "APPLICATION_ID": "ebcf1967-94d6-4fe1-9f28-323614e4e1a1",
+    "DEBUG": "true"
   }
 }

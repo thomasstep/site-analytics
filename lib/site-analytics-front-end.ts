@@ -23,9 +23,8 @@ const { templateValues } = config;
 function processHtmlTemplates(templateDirectory: string, currentChildDirectory: string, htmlDirectory: string) {
     const currentDirectory = `${templateDirectory}${currentChildDirectory}`;
     const directoryEntries = fse.readdirSync(currentDirectory, { withFileTypes: true });
-    // Only want to template and copy over .html files
     const files = directoryEntries
-      .filter((dirent: any) => dirent.isFile() && dirent.name.endsWith('.html'))
+      .filter((dirent: any) => dirent.isFile())
       .map((dirent: any) => dirent.name);
     const directories = directoryEntries
       .filter((dirent: any) => dirent.isDirectory())
@@ -76,8 +75,8 @@ export class FrontEnd extends Stack {
         },
       ],
       // This enabled web hosting
-      websiteIndexDocument: 'index.html',
-      websiteErrorDocument: '404.html',
+      websiteIndexDocument: 'index',
+      websiteErrorDocument: '404',
     });
 
     // Preprocess with mustache.js
@@ -88,6 +87,8 @@ export class FrontEnd extends Stack {
     const deployment = new s3Deploy.BucketDeployment(this, 'site-analytics-site-deployment', {
       sources: [s3Deploy.Source.asset(htmlDirectory)],
       destinationBucket: primaryBucket,
+      contentType: 'text/html',
+      prune: true,
     });
 
     const primaryBucketDistribution = new cloudfront.Distribution(this, 'site-analytics-site-dist', {
