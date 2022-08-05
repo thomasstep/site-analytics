@@ -18,9 +18,9 @@ const { templateValues } = config;
 /**
  * templateDirectory is the top level directory where all the templates are stored
  * currentChildDirectory is the current path underneath the templateDirectory that we are processing
- * htmlDirectory is where processed HTML templates should be written
+ * siteDirectory is where processed HTML templates should be written
  */
-function processHtmlTemplates(templateDirectory: string, currentChildDirectory: string, htmlDirectory: string) {
+function processHtmlTemplates(templateDirectory: string, currentChildDirectory: string, siteDirectory: string) {
     const currentDirectory = `${templateDirectory}${currentChildDirectory}`;
     const directoryEntries = fse.readdirSync(currentDirectory, { withFileTypes: true });
     const files = directoryEntries
@@ -31,7 +31,7 @@ function processHtmlTemplates(templateDirectory: string, currentChildDirectory: 
       .map((dirent: any) => dirent.name);
     files.forEach((file) => {
       const templatePath = `${currentDirectory}/${file}`;
-      const htmlChildDirectory = `${htmlDirectory}${currentChildDirectory}`;
+      const htmlChildDirectory = `${siteDirectory}${currentChildDirectory}`;
       const htmlPath = `${htmlChildDirectory}/${file}`;
       const template = fse.readFileSync(templatePath, 'utf8');
       const staticPage = mustache.render(template, templateValues);
@@ -40,7 +40,7 @@ function processHtmlTemplates(templateDirectory: string, currentChildDirectory: 
     });
     directories.forEach((directory) => {
       // Recursion stops when the file tree ends
-      processHtmlTemplates(templateDirectory, `${currentChildDirectory}/${directory}`, htmlDirectory);
+      processHtmlTemplates(templateDirectory, `${currentChildDirectory}/${directory}`, siteDirectory);
     });
 }
 
@@ -75,23 +75,24 @@ export class FrontEnd extends Stack {
         },
       ],
       // This enabled web hosting
-      websiteIndexDocument: 'index',
-      websiteErrorDocument: '404',
+      websiteIndexDocument: 'index.html',
+      websiteErrorDocument: '404.html',
     });
 
     // Preprocess with mustache.js
     const templateDirectory = 'siteTemplates';
-    const htmlDirectory = 'site';
-    processHtmlTemplates(templateDirectory, '', htmlDirectory);
+    const siteDirectory = 'site';
+    processHtmlTemplates(templateDirectory, '', siteDirectory);
 
-    const deployment = new s3Deploy.BucketDeployment(this, 'site-analytics-site-deployment', {
-      sources: [s3Deploy.Source.asset(htmlDirectory)],
+    new s3Deploy.BucketDeployment(this, 'site-analytics-site-deployment', {
+      sources: [
+        s3Deploy.Source.asset(siteDirectory),
+      ],
       destinationBucket: primaryBucket,
-      contentType: 'text/html',
       prune: true,
     });
 
-    const primaryBucketDistribution = new cloudfront.Distribution(this, 'site-analytics-site-dist', {
+    new cloudfront.Distribution(this, 'site-analytics-site-dist', {
       defaultBehavior: {
         origin: new cloudfrontOrigins.S3Origin(primaryBucket),
       },

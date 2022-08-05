@@ -1,3 +1,5 @@
+import { constants, setCookie } from "./util.js";
+
 const AUTHENTICATION_SERVICE_URL = 'https://kelxh6t44h.execute-api.us-east-1.amazonaws.com/prod';
 const APPLICATION_ID = 'ebcf1967-94d6-4fe1-9f28-323614e4e1a1';
 const DEBUG = 'true' === 'true';
@@ -19,7 +21,9 @@ function handleSubmit(event) {
         console.log(jsonData);
       }
 
-      window.location.replace('/');
+      const { token } = jsonData;
+      setCookie(constants.tokenCookieName, token);
+      window.location.replace('/profile.html');
     })
     .catch((err) => {
       if (DEBUG) {

@@ -26,6 +26,7 @@ const CONSTANTS = {
   CONFLICT_STATUS_CODE: 409,
   SERVER_ERROR_STATUS_CODE: 500,
   // Misc
+  corsAllowOriginHeader: '*', // Can be overridden
   LOGGER_LEVEL: process.env.LOGGER_LEVEL || 'debug',
 };
 

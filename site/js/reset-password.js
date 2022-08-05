@@ -22,7 +22,7 @@ function handleSubmit(event) {
         console.log('Successful call');
       }
 
-      window.location.replace = '/signin'
+      window.location.replace('/signin.html');
     })
     .catch((err) => {
       if (DEBUG) {

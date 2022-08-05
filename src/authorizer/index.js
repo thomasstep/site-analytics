@@ -42,12 +42,11 @@ async function handler(event) {
   try {
     const {
       jwksUrl,
-      jwtUserIdKey,
       jwtClaims,
     } = config;
     const JWKS = jose.createRemoteJWKSet(new URL(jwksUrl));
     const { payload } = await jose.jwtVerify(token, JWKS, jwtClaims);
-    const userId = payload[jwtUserIdKey];
+    const userId = payload.sub;
 
     const userData = await readUser(userId);
     if (!userData.id) {

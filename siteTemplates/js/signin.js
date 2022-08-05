@@ -1,3 +1,5 @@
+import { constants, setCookie } from "./util.js";
+
 const AUTHENTICATION_SERVICE_URL = '{{{ AUTHENTICATION_SERVICE_URL }}}';
 const APPLICATION_ID = '{{ APPLICATION_ID }}';
 const DEBUG = '{{ DEBUG }}' === 'true';
@@ -19,7 +21,9 @@ function handleSubmit(event) {
         console.log(jsonData);
       }
 
-      window.location.replace('/profile');
+      const { token } = jsonData;
+      setCookie(constants.tokenCookieName, token);
+      window.location.replace('/profile.html');
     })
     .catch((err) => {
       if (DEBUG) {

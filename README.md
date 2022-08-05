@@ -16,7 +16,6 @@ Adjust values in `config.json` as needed. More information about the config valu
 - `useAuthorization` determines whether or not a custom Lambda authorizer will be used for the API Gateway traffic.
   - If `useAuthorization` is set to `true`, then `jwksUrl` and `jwtUserUniqueIdKey` are required and `jwtClaims` are optional.
 - `jwksUrl` this is the URL of the JWKS that should be used to verify the JWT presented to the API.
-- `jwtUserUniqueIdKey` this is the key that corresponds to a user's unique identifier in a JWT's payload, which is used for authorization purposes.
 - `jwtClaims` this is an object that corresponds to the claims that a JWT should be verified against. Should follow the format of [`jose`'s `jwtverify`](https://github.com/panva/jose/blob/main/docs/interfaces/jwt_verify.JWTVerifyOptions.md).
 - `templateValues` this is an object containing values used while preprocessing the temlpated HTML in the `/siteTemplates` folder. See the (Presentation Layer section)[#presentation-layer] for more information.
 
@@ -39,7 +38,7 @@ As a user I would like to be able to
 
 ### Authentication
 
-Authentication is JWT based. A proper JWKS URL and claims will need to be configured for the Lambda authorizer to know how to validate JWTs. The JWKS URL and claims will be part of the configuration file that is read in and given to the Lambda authorizer. The Lambda authorizer source will be held in `src/authorizer`. The Lambda authorizer will expect a key named `email` to be in the JWT's payload to then be used as a user's unique ID for authorization.
+Authentication is JWT based. A proper JWKS URL and claims will need to be configured for the Lambda authorizer to know how to validate JWTs. The JWKS URL and claims will be part of the configuration file that is read in and given to the Lambda authorizer. The Lambda authorizer source will be held in `src/authorizer`. The Lambda authorizer will use the JWT's `sub` claim as a user's unique ID for authorization.
 
 Authentication can be completely disabled if desired although that is not recommended.
 

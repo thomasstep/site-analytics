@@ -16,7 +16,7 @@ function handleSubmit(event) {
         console.log('Successful call');
       }
 
-      window.location.replace('/reset-password');
+      window.location.replace('/reset-password.html');
     })
     .catch((err) => {
       if (DEBUG) {

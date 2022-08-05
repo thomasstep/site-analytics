@@ -4,6 +4,7 @@ const {
   constructAuth,
 } = require('/opt/authUtils');
 const {
+  corsAllowOriginHeader,
   BAD_INPUT_STATUS_CODE,
   NOT_FOUND_STATUS_CODE,
   SERVER_ERROR_STATUS_CODE,
@@ -32,6 +33,10 @@ function withErrorHandling(func) {
       const auth = constructAuth(event);
       logger.debug('Authentication information', auth);
       const result = await func(event, auth, ...args);
+      result.headers = {
+        'Access-Control-Allow-Origin' : corsAllowOriginHeader,
+        'Access-Control-Allow-Credentials' : true,
+      };
       return result;
     } catch (err) {
       logger.error(err);
@@ -60,6 +65,10 @@ function withErrorHandling(func) {
 
       const errorPayload = {
         statusCode,
+        headers: {
+          'Access-Control-Allow-Origin' : corsAllowOriginHeader,
+          'Access-Control-Allow-Credentials' : true,
+        },
         body: JSON.stringify({
           message,
         }),

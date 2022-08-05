@@ -15,6 +15,12 @@ const devApi = new Api(app, 'site-analytics-api-dev', {
   crowApiProps: {
     apiGatewayName: 'site-analytics-dev',
     useAuthorizerLambda: true,
+    apiGatewayConfiguration: {
+      defaultCorsPreflightOptions: {
+        allowOrigins: ['*'],
+        allowCredentials: true,
+      },
+    },
     lambdaIntegrationOptions: {
       '/v1/sites/{siteId}/stats/get': {
         requestParameters: {

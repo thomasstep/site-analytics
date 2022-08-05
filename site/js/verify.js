@@ -20,7 +20,7 @@ function handleSubmit(event) {
         console.log(jsonData);
       }
 
-      window.location.replace = '/signin';
+      window.location.replace('/signin.html');
     })
     .catch((err) => {
       if (DEBUG) {

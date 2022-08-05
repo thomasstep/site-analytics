@@ -22,7 +22,7 @@ function handleSubmit(event) {
         console.log('Successful call');
       }
 
-      window.location.replace = '/verify';
+      window.location.replace('/verify.html');
     })
     .catch((err) => {
       if (DEBUG) {
