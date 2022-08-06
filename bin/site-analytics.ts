@@ -4,14 +4,17 @@ import * as cdk from 'aws-cdk-lib';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Tables } from '../lib/site-analytics-tables';
+import { Bucket } from '../lib/site-analytics-buckets';
 import { Api } from '../lib/site-analytics-api';
 import { FrontEnd } from '../lib/site-analytics-front-end';
 import { Monitor } from '../lib/site-analytics-monitor';
 
 const app = new cdk.App();
 const devTables = new Tables(app, 'site-analytics-tables-dev');
+const devBuckets = new Bucket(app, 'site-analytics-buckets-dev', {});
 const devApi = new Api(app, 'site-analytics-api-dev', {
   primaryTable: devTables.primaryTable,
+  primaryBucket: devBuckets.primaryBucket,
   crowApiProps: {
     apiGatewayName: 'site-analytics-dev',
     useAuthorizerLambda: true,
@@ -76,31 +79,6 @@ const devApi = new Api(app, 'site-analytics-api-dev', {
         validateRequestParameters: true,
       },
     ],
-    // apiGatewayConfiguration: {
-    //   deployOptions: {
-    //     tracingEnabled: true,
-    //   },
-    // },
-    // lambdaConfigurations: {
-    //   '/v1/sites/post': {
-    //     tracing: lambda.Tracing.ACTIVE,
-    //   },
-    //   '/v1/sites/get': {
-    //     tracing: lambda.Tracing.ACTIVE,
-    //   },
-    //   '/v1/sites/{siteId}/get': {
-    //     tracing: lambda.Tracing.ACTIVE,
-    //   },
-    //   '/v1/sites/{siteId}/delete': {
-    //     tracing: lambda.Tracing.ACTIVE,
-    //   },
-    //   'v1/sites/{siteId}/stats/get': {
-    //     tracing: lambda.Tracing.ACTIVE,
-    //   },
-    //   '/v1/sites/{siteId}/stats/post': {
-    //     tracing: lambda.Tracing.ACTIVE,
-    //   },
-    // }
   },
 });
 new FrontEnd(app, 'site-analytics-front-end-dev', {});

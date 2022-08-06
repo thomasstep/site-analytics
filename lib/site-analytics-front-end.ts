@@ -1,5 +1,3 @@
-import * as path from 'path';
-
 import { Stack, StackProps, Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
@@ -7,42 +5,7 @@ import * as s3Deploy from 'aws-cdk-lib/aws-s3-deployment';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as cloudfrontOrigins from 'aws-cdk-lib/aws-cloudfront-origins';
 
-import * as fse from 'fs-extra';
-import * as mustache from 'mustache';
-
-const filePath = path.join(process.cwd(), 'config.json');
-const contents = fse.readFileSync(filePath, 'utf8');
-const config = JSON.parse(contents);
-const { templateValues } = config;
-
-/**
- * templateDirectory is the top level directory where all the templates are stored
- * currentChildDirectory is the current path underneath the templateDirectory that we are processing
- * siteDirectory is where processed HTML templates should be written
- */
-function processHtmlTemplates(templateDirectory: string, currentChildDirectory: string, siteDirectory: string) {
-    const currentDirectory = `${templateDirectory}${currentChildDirectory}`;
-    const directoryEntries = fse.readdirSync(currentDirectory, { withFileTypes: true });
-    const files = directoryEntries
-      .filter((dirent: any) => dirent.isFile())
-      .map((dirent: any) => dirent.name);
-    const directories = directoryEntries
-      .filter((dirent: any) => dirent.isDirectory())
-      .map((dirent: any) => dirent.name);
-    files.forEach((file) => {
-      const templatePath = `${currentDirectory}/${file}`;
-      const htmlChildDirectory = `${siteDirectory}${currentChildDirectory}`;
-      const htmlPath = `${htmlChildDirectory}/${file}`;
-      const template = fse.readFileSync(templatePath, 'utf8');
-      const staticPage = mustache.render(template, templateValues);
-      fse.mkdirSync(htmlChildDirectory, { recursive: true });
-      fse.writeFileSync(htmlPath, staticPage);
-    });
-    directories.forEach((directory) => {
-      // Recursion stops when the file tree ends
-      processHtmlTemplates(templateDirectory, `${currentChildDirectory}/${directory}`, siteDirectory);
-    });
-}
+import { processTemplates } from './util';
 
 export class FrontEnd extends Stack {
   /**
@@ -82,7 +45,7 @@ export class FrontEnd extends Stack {
     // Preprocess with mustache.js
     const templateDirectory = 'siteTemplates';
     const siteDirectory = 'site';
-    processHtmlTemplates(templateDirectory, '', siteDirectory);
+    processTemplates(templateDirectory, '', siteDirectory);
 
     new s3Deploy.BucketDeployment(this, 'site-analytics-site-deployment', {
       sources: [

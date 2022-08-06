@@ -9,6 +9,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as lambdaEventSources from 'aws-cdk-lib/aws-lambda-event-sources';
 import * as logs from 'aws-cdk-lib/aws-logs';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as snsSub from 'aws-cdk-lib/aws-sns-subscriptions';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
@@ -28,6 +29,7 @@ function connectDdbToLambdas(table: dynamodb.Table, apiLambdas: LambdasByPath, p
 
 interface ISiteAnalyticsStackProps extends StackProps {
   primaryTable: dynamodb.Table,
+  primaryBucket: s3.Bucket,
   crowApiProps: CrowApiProps,
 }
 
@@ -38,6 +40,7 @@ export class Api extends Stack {
 
     const {
       primaryTable,
+      primaryBucket,
       crowApiProps,
     } = props;
 
@@ -129,9 +132,14 @@ export class Api extends Stack {
      *************************************************************************/
 
     const v1Resource = api.gateway.root.getResource('v1');
-     if (!v1Resource) {
+    if (!v1Resource) {
        throw new Error('v1 resource cannot be found');
-     }
+    }
+
+    const scriptResource = v1Resource.getResource('script.js');
+    if (!scriptResource) {
+       throw new Error('script resource cannot be found');
+    }
 
     const sitesResource = v1Resource.getResource('sites');
      if (!sitesResource) {
@@ -153,6 +161,11 @@ export class Api extends Stack {
     });
     snsTopic.grantPublish(apiGatewayRole);
 
+    const s3ApiGatewayRole = new iam.Role(this, 's3-integration-role', {
+      assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com')
+    });
+    primaryBucket.grantRead(s3ApiGatewayRole);
+
     const defaultMethodOptions = {
       methodResponses: [
         {
@@ -160,15 +173,100 @@ export class Api extends Stack {
           responseModels: {
             'application/json': apigateway.Model.EMPTY_MODEL,
           },
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': config.corsAllowOriginHeader,
+            'method.response.header.Access-Control-Allow-Credentials': true,
+          },
         },
         {
           statusCode: "500",
           responseModels: {
             'application/json': apigateway.Model.EMPTY_MODEL,
           },
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': config.corsAllowOriginHeader,
+            'method.response.header.Access-Control-Allow-Credentials': true,
+          },
         },
       ],
     };
+
+    /**************************************************************************
+     *
+     * GET script to add stats
+     *
+     *************************************************************************/
+
+     scriptResource.addMethod(
+      'GET',
+      new apigateway.AwsIntegration({
+        service: 's3',
+        path: '{bucket}/script.js',
+        integrationHttpMethod: 'GET',
+        options: {
+          credentialsRole: s3ApiGatewayRole,
+          passthroughBehavior: apigateway.PassthroughBehavior.WHEN_NO_TEMPLATES,
+          requestParameters: {
+            'integration.request.header.Content-Type': "'application/x-www-form-urlencoded'",
+            'integration.request.path.bucket': `'${primaryBucket.bucketName}'`
+          },
+          integrationResponses: [
+            {
+              statusCode: "200",
+            },
+            {
+              statusCode: "404",
+              selectionPattern: "404",
+              responseTemplates: {
+                'application/json': '{"error": "Stats script not available."}',
+              },
+            },
+            {
+              statusCode: "500",
+              // Anything but a 2XX response
+              selectionPattern: "(1|3|4|5)\\d{2}",
+              responseTemplates: {
+                'application/json': '{}',
+              },
+            },
+          ],
+        },
+      }),
+      {
+        methodResponses: [
+          {
+            statusCode: "200",
+            responseModels: {
+              'application/json': apigateway.Model.EMPTY_MODEL,
+            },
+            responseParameters: {
+              'method.response.header.Access-Control-Allow-Origin': config.corsAllowOriginHeader,
+              'method.response.header.Access-Control-Allow-Credentials': true,
+            },
+          },
+          {
+            statusCode: "404",
+            responseModels: {
+              'application/json': apigateway.Model.EMPTY_MODEL,
+            },
+            responseParameters: {
+              'method.response.header.Access-Control-Allow-Origin': config.corsAllowOriginHeader,
+              'method.response.header.Access-Control-Allow-Credentials': true,
+            },
+          },
+          {
+            statusCode: "500",
+            responseModels: {
+              'application/json': apigateway.Model.EMPTY_MODEL,
+            },
+            responseParameters: {
+              'method.response.header.Access-Control-Allow-Origin': config.corsAllowOriginHeader,
+              'method.response.header.Access-Control-Allow-Credentials': true,
+            },
+          },
+        ],
+      },
+    );
 
     /**************************************************************************
      *
