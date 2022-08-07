@@ -1,4 +1,5 @@
 {
+  "corsAllowOriginHeader": "*",
   "useSqs": false,
   "useAuthorization": true,
   "jwksUrl": "https://kelxh6t44h.execute-api.us-east-1.amazonaws.com/prod/v1/applications/ebcf1967-94d6-4fe1-9f28-323614e4e1a1/jwks.json",
