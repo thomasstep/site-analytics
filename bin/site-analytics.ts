@@ -83,7 +83,7 @@ const devApi = new Api(app, 'site-analytics-api-dev', {
 });
 new FrontEnd(app, 'site-analytics-front-end-dev', {});
 new Monitor(app, 'site-analytics-monitor-dev', {
-  appIdParameter: '/site-analytics-api-dev/crow-app-id',
-  appSecretParameter: '/site-analytics-api-dev/crow-app-secret',
+  authenticationServiceUrl: 'https://kelxh6t44h.execute-api.us-east-1.amazonaws.com/prod',
+  authenticationServiceApplicationId: 'ebcf1967-94d6-4fe1-9f28-323614e4e1a1',
   url: devApi.api.gateway.url,
 });

@@ -8,8 +8,8 @@ import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { Pigeon } from 'cdk-pigeon';
 
 interface IPigeonStackProps extends StackProps {
-  appIdParameter: string,
-  appSecretParameter: string,
+  authenticationServiceUrl: string,
+  authenticationServiceApplicationId: string,
   url: string,
 }
 
@@ -25,18 +25,10 @@ export class Monitor extends Stack {
     super(scope, id, props);
 
     const {
-      appIdParameter,
-      appSecretParameter,
+      authenticationServiceUrl,
+      authenticationServiceApplicationId,
       url,
     } = props;
-    const appId = ssm.StringParameter.valueForStringParameter(
-      this,
-      appIdParameter,
-    );
-    const appSecret = ssm.StringParameter.valueForStringParameter(
-      this,
-      appSecretParameter,
-    );
 
     new Pigeon(this, 'pigeon', {
       schedule: events.Schedule.rate(Duration.hours(12)),
@@ -46,9 +38,8 @@ export class Monitor extends Stack {
         runtime: lambda.Runtime.NODEJS_14_X,
         environment: {
           'SITE_ANALYTICS_URL': url,
-          'CROW_AUTH_URL': 'https://api.crowauth.thomasstep.com',
-          'CROW_APP_ID': appId,
-          'CROW_APP_SECRET': appSecret,
+          'AUTHENTICATION_SERVICE_URL': authenticationServiceUrl,
+          'AUTH_SERVICE_APP_ID': authenticationServiceApplicationId,
         },
         timeout: Duration.minutes(1),
         logRetention: logs.RetentionDays.ONE_WEEK,

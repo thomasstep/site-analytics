@@ -3,9 +3,8 @@ const assert = require('assert');
 const axios = require('axios');
 
 const url = process.env.SITE_ANALYTICS_URL;
-const crowAuthUrl = process.env.CROW_AUTH_URL;
-const applicationId = process.env.CROW_APP_ID;
-const applicationSecret = process.env.CROW_APP_SECRET;
+const authenticationServiceUrl = process.env.AUTHENTICATION_SERVICE_URL;
+const applicationId = process.env.AUTH_SERVICE_APP_ID;
 const sitesEndpoint = 'v1/sites';
 const statsEndpoint = '/stats';
 const testEmail = 'test@test.com';
@@ -22,39 +21,11 @@ function sleep(sec) {
 async function handler() {
   try {
     // ************************************************************************
-    console.log('Retrieving application JWT');
-    const getApplicationJwt = await axios({
-      method: 'post',
-      url: `${crowAuthUrl}/v1/application/signin`,
-      data: {
-        applicationId,
-        applicationSecret,
-      },
-    });
-    assert.ok(
-      getApplicationJwt.status === 200,
-      'Wrong status while getting application JWT',
-    );
-    const {
-      data: {
-        token: applicationToken,
-      },
-    } = getApplicationJwt;
-    assert.ok(
-      applicationToken,
-      'Could not get application JWT',
-    );
-    console.log('PASSED');
-
-    // ************************************************************************
     console.log('Retrieving user JWT');
     const getUserJwt = await axios({
-      method: 'post',
-      url: `${crowAuthUrl}/v1/signin`,
-      headers: {
-        authorization: `Bearer ${applicationToken}`,
-      },
-      data: {
+      method: 'get',
+      url: `${authenticationServiceUrl}/v1/applications/${applicationId}/users/token`,
+      params: {
         email: testEmail,
         password: 'test',
       },
@@ -154,8 +125,8 @@ async function handler() {
       'GET /sites/{siteId} response does not include created time',
     );
     assert.ok(
-      getSiteById.data.owner === testEmail,
-      `GET /sites/{siteId} response does not include correct owner ${getSiteById.data.owner}`,
+      getSiteById.data.owner,
+      `GET /sites/{siteId} response does not include owner field`,
     );
     assert.ok(
       getSiteById.data.id === siteId,
