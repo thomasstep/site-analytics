@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
   <body>
     <h1>Stats<h1>
     <p id="stats-text"></p>
-    <svg id="d3-area" height=200 width=450></svg>
+    <div class="weekly-views-chart-container" style="position: relative; margin: auto; height:40vh; width:40vw">
+      <canvas id="weekly-views-chart"></canvas>
+    </div>
     <script type="module" src="js/statistics.js"></script>
   </body>
 </html>
