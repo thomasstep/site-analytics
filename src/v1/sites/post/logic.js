@@ -15,7 +15,7 @@ async function logic(auth, url, name) {
     uniqueId,
   } = auth;
   if (!uniqueId) {
-    throw new MissingUniqueIdError('Unique ID not found while creating calendar', auth);
+    throw new MissingUniqueIdError('Unique ID not found while creating site', auth);
   }
 
   const siteId = await createSite(uniqueId, url, name);

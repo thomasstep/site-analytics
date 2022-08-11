@@ -85,12 +85,12 @@ export class Api extends Stack {
           requestValidator: 'validateParams',
         },
         // Defined below
-        // '/v1/sites/{siteId}/stats/post': {
-        //   requestModels: {
-        //     'application/json': 'createStats',
-        //   },
-        //   requestValidator: 'validateBody',
-        // },
+        '/v1/sites/{siteId}/stats/put': {
+          requestModels: {
+            'application/json': 'createStats',
+          },
+          requestValidator: 'validateBody',
+        },
       },
     };
 
@@ -108,7 +108,7 @@ export class Api extends Stack {
         '/v1/sites/{siteId}/get',
         '/v1/sites/{siteId}/delete',
         '/v1/sites/{siteId}/stats/get',
-        // '/v1/sites/{siteId}/stats/post',
+        '/v1/sites/{siteId}/stats/put',
       ],
       'PRIMARY_TABLE_NAME',
     );
@@ -119,15 +119,7 @@ export class Api extends Stack {
 
     /**************************************************************************
      *
-     * Create async Lambdas in this stack. They use the shared layer
-     * and I do not want to introduce that cross-stack dependency because
-     * then I can not update the layer
-     *
-     *************************************************************************/
-
-    /**************************************************************************
-     *
-     * Setup common resources
+     * Getting common resources
      *
      *************************************************************************/
 
@@ -271,116 +263,5 @@ export class Api extends Stack {
         ],
       },
     );
-
-    /**************************************************************************
-     *
-     * POST stats
-     *
-     *************************************************************************/
-
-
-    let postStatsMessage = `$util.urlEncode('{"siteId":"')$util.escapeJavaScript($input.params('siteId'))`;
-    postStatsMessage += `$util.urlEncode('","body":')$input.json('$')`;
-    postStatsMessage += `$util.urlEncode('}')`;
-    statsResource.addMethod(
-      'POST',
-      new apigateway.AwsIntegration({
-        service: 'sns',
-        path: '/',
-        integrationHttpMethod: 'POST',
-        options: {
-          credentialsRole: apiGatewayRole,
-          passthroughBehavior: apigateway.PassthroughBehavior.NEVER,
-          requestParameters: {
-            'integration.request.header.Content-Type': "'application/x-www-form-urlencoded'",
-          },
-          requestTemplates: {
-            'application/json': `Action=Publish&TopicArn=$util.urlEncode(\'${snsTopic.topicArn}\')\
-&Message=${postStatsMessage}\
-&MessageAttributes.entry.1.Name=operation\
-&MessageAttributes.entry.1.Value.DataType=String\
-&MessageAttributes.entry.1.Value.StringValue=postStats`,
-          },
-          integrationResponses: [
-            {
-              statusCode: "202",
-              responseTemplates: {
-                'application/json': '{}',
-              },
-              responseParameters: {
-                'method.response.header.Access-Control-Allow-Origin': "'*'",
-                'method.response.header.Access-Control-Allow-Credentials': "'true'",
-              },
-            },
-            {
-              statusCode: "500",
-              // Anything but a 2XX response
-              selectionPattern: "(1|3|4|5)\\d{2}",
-              responseTemplates: {
-                'application/json': '{}',
-              },
-              responseParameters: {
-                'method.response.header.Access-Control-Allow-Origin': "'*'",
-                'method.response.header.Access-Control-Allow-Credentials': "'true'",
-              },
-            },
-          ],
-        },
-      }),
-      {
-        ...defaultMethodOptions,
-        requestModels: {
-          'application/json': api.models.createStats,
-        },
-        requestValidator: api.requestValidators.validateBody,
-      },
-    );
-
-    let layers: lambda.ILayerVersion[] | undefined;
-    if (api.lambdaLayer) {
-      layers = [api.lambdaLayer];
-    }
-
-    const dlq = new sqs.Queue(this, `post-stats-dlq`, {});
-    const postStats = new lambda.Function(
-      this,
-      `post-stats-lambda`,
-      {
-        runtime: lambda.Runtime.NODEJS_14_X,
-        code: lambda.Code.fromAsset(`asyncSrc/postStats`),
-        handler: 'index.handler',
-        logRetention: logs.RetentionDays.ONE_WEEK,
-        deadLetterQueue: dlq,
-        layers,
-      },
-    );
-    primaryTable.grantFullAccess(postStats);
-    postStats.addEnvironment('PRIMARY_TABLE_NAME', primaryTable.tableName);
-    if (config.useSqs && sqsQueue) {
-      // TODO Does the SQS Queue need its own DLQ?
-      // TODO Test that this integration works
-      snsTopic.addSubscription(new snsSub.SqsSubscription(
-        sqsQueue,
-        {
-          filterPolicy: {
-            operation: sns.SubscriptionFilter.stringFilter({
-              allowlist: ['postStats'],
-            }),
-          },
-        }
-      ));
-      postStats.addEventSource(new lambdaEventSources.SqsEventSource(sqsQueue));
-    } else {
-      snsTopic.addSubscription(new snsSub.LambdaSubscription(
-        postStats,
-        {
-          filterPolicy: {
-            operation: sns.SubscriptionFilter.stringFilter({
-              allowlist: ['postStats'],
-            }),
-          },
-        }
-      ));
-    }
   }
 }

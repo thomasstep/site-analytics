@@ -99,9 +99,10 @@ async function readUser(uniqueId) {
 
 async function deleteSite(uniqueId, siteId) {
   await authorizeUserForSite(uniqueId, siteId);
-  // TODO make final two calls parallel
-  await sites.remove(siteId);
-  await users.removeSite(uniqueId, siteId, users.listTypes.OWNER);
+  await Promise.all([
+    sites.remove(siteId),
+    users.removeSite(uniqueId, siteId, users.listTypes.OWNER),
+  ]);
 }
 
 async function siteExists(siteId) {

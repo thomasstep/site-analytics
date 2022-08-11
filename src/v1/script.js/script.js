@@ -7,7 +7,7 @@ const stats = {
   pageView: pathName,
 };
 fetch(`${srcOrigin}/prod/v1/sites/${siteId}/stats`, {
-  method: 'POST',
+  method: 'PUT',
   headers: {
     'Content-Type': 'application/json',
   },

@@ -16,7 +16,7 @@ async function logic(auth, siteId) {
     uniqueId,
   } = auth;
   if (!uniqueId) {
-    throw new MissingUniqueIdError('Unique ID not found while creating calendar', auth);
+    throw new MissingUniqueIdError('Unique ID not found while deleting site', auth);
   }
 
   await deleteSite(uniqueId, siteId);

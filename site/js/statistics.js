@@ -99,6 +99,75 @@ function onPageLoad() {
           },
         },
       );
+
+      const weeklyPageViewData = {};
+      Object.keys(jsonData).forEach((date) => {
+        const datePageView = jsonData[date].pageView;
+        const {
+          overall,
+          ...actualPageViews
+        } = datePageView;
+        Object.keys(actualPageViews).forEach((page) =>{
+          const existingPageCount = weeklyPageViewData[page] || 0;
+          const todaysPageCount = actualPageViews[page];
+          const newPageCount = existingPageCount + todaysPageCount;
+          weeklyPageViewData[page] = newPageCount;
+        });
+      });
+      if (DEBUG) {
+        console.log(weeklyPageViewData);
+      }
+
+      const topTenPageViews = Object.entries(weeklyPageViewData).sort((a, b) => {
+        return b[1] - a[1];
+      }).slice(0, 10).map((entry) => {
+        return {
+          x: entry[0],
+          y: entry[1],
+        };
+      });
+      if (DEBUG) {
+        console.log(topTenPageViews);
+      }
+
+      const topTenPageViewsChart = new Chart(
+        document.getElementById('top-ten-page-views-chart'),
+        {
+          type: 'bar',
+          data: {
+            datasets: [{
+              label: 'Page Views',
+              data: topTenPageViews,
+              backgroundColor: 'rgb(75, 192, 192)',
+            }],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              title: {
+                display: true,
+                text: 'Past Week\'s Page Views',
+              },
+            },
+            scales: {
+              x: {
+                display: true,
+                title: {
+                  display: true,
+                  text: 'Page',
+                },
+              },
+              y: {
+                display: true,
+                title: {
+                  display: true,
+                  text: 'Views',
+                },
+              },
+            },
+          },
+        },
+      );
     })
     .catch((err) => {
       if (DEBUG) {

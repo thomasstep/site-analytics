@@ -12,9 +12,8 @@ Adjust values in `config.json` as needed. More information about the config valu
 
 ## Config
 
-- `useSqs` tells AWS to create SQS Queues between the SNS topic and Lambdas to absorb traffic spikes better.
 - `useAuthorization` determines whether or not a custom Lambda authorizer will be used for the API Gateway traffic.
-  - If `useAuthorization` is set to `true`, then `jwksUrl` and `jwtUserUniqueIdKey` are required and `jwtClaims` are optional.
+  - If `useAuthorization` is set to `true`, then `jwksUrl` is required and `jwtClaims` is optional.
 - `jwksUrl` this is the URL of the JWKS that should be used to verify the JWT presented to the API.
 - `jwtClaims` this is an object that corresponds to the claims that a JWT should be verified against. Should follow the format of [`jose`'s `jwtverify`](https://github.com/panva/jose/blob/main/docs/interfaces/jwt_verify.JWTVerifyOptions.md).
 - `templateValues` this is an object containing values used while preprocessing the temlpated HTML in the `/siteTemplates` folder. See the (Presentation Layer section)[#presentation-layer] for more information.
@@ -73,13 +72,7 @@ Using a type of resource-based authorization where each individual resource (sit
 
 ### API Layer
 
-Code for the API layer is contained in the `/src` and `/asyncSrc` folders.
-
-- API Gateway and Lambda/service proxy integrations (SNS and/or SQS for async calls)
-  - Level of async absorption to be configuration item
-    - Without Queue: SNS -> Lambda -> DDB (MVP)
-    - With Queue: SNS -> SQS -> Lambda -> DDB (future)
-- The Lambda that handles site count will have to be very fast or else the whole system could get bogged down in a viral moment
+Code for the API layer is contained in the `/src` folder.
 
 #### API Design
 
@@ -131,7 +124,7 @@ Code for the API layer is contained in the `/src` and `/asyncSrc` folders.
   - Can only be done by the user themselves, owners, or admins
   - Remove user from site's readers set
   - Remove site to user's readers set
-- `POST /sites/{id}/stats` (DONE)
+- `PUT /sites/{id}/stats` (DONE)
   - Async
   - Payload structure
     {
@@ -162,12 +155,11 @@ Code for the API layer is contained in the `/src` and `/asyncSrc` folders.
       - Request deletion of S3 folder with site's ID
       - Delete DynamoDB items between now and archival period
 
-
 ### Presentation Layer
 
 Code for the presentation layer is contained in the `/site` and `/siteTemplates` folders. Any HTML that needs to be templated should be written in the `/siteTemplates` folder which will be preprocessed using [Mustache.js](https://github.com/janl/mustache.js) and then written to the `/site` folder.
 
-Hosted in S3 through CloudFront using basic HTML, CSS, and [Alpine.js](https://github.com/alpinejs/alpine) to help with interactivity. Charts for the site statistics will be handled using [Chart.js](https://www.chartjs.org/).
+Hosted in S3 through CloudFront using basic HTML and CSS. Charts for the site statistics will be handled using [Chart.js](https://www.chartjs.org/).
 
 Pages:
   - Sign Up
@@ -186,3 +178,18 @@ Pages:
 ### Email Snapshot
 
 - Cron that gets sites' email lists and send outs email summary
+
+### Integrate With Your Website
+
+```javascript
+<script async src="https://your.domain.com/prod/v1/script.js" siteId="your-site-id"></script>
+```
+
+### TODO
+
+- Clean up `config.json` (add to `.gitignore` and add bits to setup to link the file)
+- Add `siteTemplates` to `.gitignore`
+- Add a headless mode
+- Finish `TODO` around adding stats
+- Make a prod version and deploy
+- Make the front end prettier

@@ -1,11 +1,18 @@
-function constructAuth(event) {
-  const {
-    uniqueId,
-  } = event.requestContext.authorizer;
+const { logger } = require('/opt/logger');
 
-  return {
-    uniqueId,
-  };
+function constructAuth(event) {
+  try {
+    const {
+      uniqueId,
+    } = event.requestContext.authorizer;
+
+    return {
+      uniqueId,
+    };
+  } catch (err) {
+    logger.warn('Error constructing auth.');
+    return {};
+  }
 }
 
 module.exports = {

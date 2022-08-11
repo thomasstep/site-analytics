@@ -157,7 +157,7 @@ async function handler() {
     // ************************************************************************
     console.log('Add to stats');
     const addStats = await axios({
-      method: 'post',
+      method: 'put',
       url: `${url}${sitesEndpoint}/${siteId}${statsEndpoint}`,
       headers: {
         authorization: `Bearer ${userToken}`,
@@ -167,7 +167,7 @@ async function handler() {
       },
     });
     assert.ok(
-      addStats.status === 202,
+      addStats.status === 204,
       `POST /stats status code not correct ${addStats.status}`,
     );
     console.log('PASSED');

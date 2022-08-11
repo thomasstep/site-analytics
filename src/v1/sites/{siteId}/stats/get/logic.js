@@ -15,7 +15,7 @@ async function logic(auth, siteId, startDate, endDate) {
     uniqueId,
   } = auth;
   if (!uniqueId) {
-    throw new MissingUniqueIdError('Unique ID not found while creating calendar', auth);
+    throw new MissingUniqueIdError('Unique ID not found while reading stats', auth);
   }
 
   const statsByDate = await readFromStats(uniqueId, siteId, startDate, endDate);

@@ -7,6 +7,10 @@ import * as cloudfrontOrigins from 'aws-cdk-lib/aws-cloudfront-origins';
 
 import { processTemplates } from './util';
 
+interface ISiteAnalyticsFrontEndStackProps extends StackProps {
+  allowedOrigins: string[],
+}
+
 export class FrontEnd extends Stack {
   /**
    *
@@ -14,12 +18,12 @@ export class FrontEnd extends Stack {
    * @param {string} id
    * @param {cdk.StackProps=} props
    */
-  constructor(scope: Construct, id: string, props: StackProps) {
+  constructor(scope: Construct, id: string, props: ISiteAnalyticsFrontEndStackProps) {
     super(scope, id, props);
 
-    // const allowedOrigins = deploymentStage === 'prod' ?
-    //   ['https://papyrusmenus.com', 'https://www.papyrusmenus.com', 'https://papyrus.thomasstep.com']
-    //   : ['*'];
+    const {
+      allowedOrigins,
+    } = props;
 
     const primaryBucket = new s3.Bucket(this, 'site-analytics-site-bucket', {
       publicReadAccess: true,
@@ -27,7 +31,7 @@ export class FrontEnd extends Stack {
       cors: [
         {
           allowedMethods: [s3.HttpMethods.GET],
-          allowedOrigins: ['*'],
+          allowedOrigins,
           allowedHeaders: ['*'],
         },
       ],

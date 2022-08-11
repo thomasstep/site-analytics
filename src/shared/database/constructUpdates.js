@@ -53,7 +53,6 @@ function constructStatsUpdates(body) {
   Object.entries(body).forEach(([key, value]) => {
     if (value) {
       // Based on payload structure
-      // TODO make a model for this for API Gateway
       addOne(key, value);
     }
   });

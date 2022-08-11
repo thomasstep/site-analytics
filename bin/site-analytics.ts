@@ -56,7 +56,7 @@ const devApi = new Api(app, 'site-analytics-api-dev', {
         modelName: 'createStats',
         schema: {
           schema: apigateway.JsonSchemaVersion.DRAFT4,
-          title: '/v1/sites/{siteId}/stats/post',
+          title: '/v1/sites/{siteId}/stats/put',
           type: apigateway.JsonSchemaType.OBJECT,
           // Body must be map[string]string
           patternProperties: {
@@ -81,7 +81,9 @@ const devApi = new Api(app, 'site-analytics-api-dev', {
     ],
   },
 });
-new FrontEnd(app, 'site-analytics-front-end-dev', {});
+new FrontEnd(app, 'site-analytics-front-end-dev', {
+  allowedOrigins: ['*'],
+});
 new Monitor(app, 'site-analytics-monitor-dev', {
   authenticationServiceUrl: 'https://kelxh6t44h.execute-api.us-east-1.amazonaws.com/prod',
   authenticationServiceApplicationId: 'ebcf1967-94d6-4fe1-9f28-323614e4e1a1',
