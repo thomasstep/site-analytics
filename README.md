@@ -3,6 +3,13 @@
 ## Getting Started
 
 ```bash
+cp config.json.example config.json
+# Fill in appropriate config
+cd src/shared
+# I link the config files together so I only need to keep track of the top level one
+# I am open to a better way of doing this
+ln -s ../../config.json
+cd ../..
 npm install
 cdk synth
 cdk deploy --all
@@ -10,13 +17,25 @@ cdk deploy --all
 
 Adjust values in `config.json` as needed. More information about the config values can be found in the [config section](#config).
 
+Another caveat is that the HTML preprocessing will not resolve a tokenized API Gateway URL since that resolution would need to happen within the CDK. After deploying the API, add the newly created site analytics API URL to the front end using the [config](#config)'s `frontEndAnalyticsServiceUrl`, i.e. `https://10tud8pp0k.execute-api.us-east-1.amazonaws.com/prod`.
+
 ## Config
 
 - `useAuthorization` determines whether or not a custom Lambda authorizer will be used for the API Gateway traffic.
   - If `useAuthorization` is set to `true`, then `jwksUrl` is required and `jwtClaims` is optional.
 - `jwksUrl` this is the URL of the JWKS that should be used to verify the JWT presented to the API.
 - `jwtClaims` this is an object that corresponds to the claims that a JWT should be verified against. Should follow the format of [`jose`'s `jwtverify`](https://github.com/panva/jose/blob/main/docs/interfaces/jwt_verify.JWTVerifyOptions.md).
-- `templateValues` this is an object containing values used while preprocessing the temlpated HTML in the `/siteTemplates` folder. See the (Presentation Layer section)[#presentation-layer] for more information.
+- `corsAllowOriginHeader` this is the value returned by the API in the header `Access-Control-Allow-Origin`.
+
+### Front End Config
+
+- `headless` creates a basic front end service of static HTML hosted on S3 and delivered through CloudFront.
+- `authenticationServiceUrl` is required whenever `headless` is set to `true`. Since the front end's authentication is implemented based on my [authentication service](https://github.com/thomasstep/authentication-service), this is required to point the API calls to a version of that service.
+- `authenticationServiceApplicationId` is required whenever `headless` is set to `true`. Since the front end's authentication is implemented based on my [authentication service](https://github.com/thomasstep/authentication-service), this is the ID of a pre-created application made using the service.
+- `frontEndAllowedOrigins` this is an array of strings listing the allowed origins of requests to the CloudFront Distribution. See the CDK documentation about Distributions for more information.
+- `frontEndDomainNames` this is an array of strings listing the alternative domain names allowed to point to the CloudFront Distribution in case you want to create a `CNAME` for the front end. See the CDK documentation about Distributions for more information.
+- `frontEndCertificateArn` this is an ARN of a previously created certificate that is valid for at least one of the domain names. See the CDK documentation about Distributions for more information.
+- `frontEndAnalyticsServiceUrl` this is the URL of this API that has been deployed before deploying the front end, i.e. `https://10tud8pp0k.execute-api.us-east-1.amazonaws.com/prod`. This is a weird caveat of preprocessing the HTML and JS before deploying it to S3.
 
 ## Design
 
@@ -187,9 +206,5 @@ Pages:
 
 ### TODO
 
-- Clean up `config.json` (add to `.gitignore` and add bits to setup to link the file)
-- Add `siteTemplates` to `.gitignore`
-- Add a headless mode
 - Finish `TODO` around adding stats
-- Make a prod version and deploy
 - Make the front end prettier

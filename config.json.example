@@ -1,0 +1,15 @@
+{
+  "corsAllowOriginHeader": "*",
+  "useAuthorization": true,
+  "jwksUrl": "",
+  "jwtClaims": {
+    "maxTokenAge": 21600
+  },
+  "headless": false,
+  "authenticationServiceUrl": "",
+  "authenticationServiceApplicationId": "",
+  "frontEndAllowedOrigins": [""],
+  "frontEndDomainNames": [""],
+  "frontEndCertificateArn": "",
+  "frontEndAnalyticsServiceUrl": ""
+}

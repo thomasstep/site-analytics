@@ -8,6 +8,13 @@ node_modules
 .cdk.staging
 cdk.out
 
+# Config files
+config.json
+src/shared/config.json
+
+# Generated site (HTML and JS)
+site
+
 !.eslintrc.js
 !src/**/*.js
 !asyncSrc/**/*.js
