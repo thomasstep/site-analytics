@@ -4,7 +4,7 @@ import {
   getCookie,
 } from "./util.js";
 
-const ANALYTICS_SERVICE_URL = 'https://10tud8pp0k.execute-api.us-east-1.amazonaws.com/prod';
+const ANALYTICS_SERVICE_URL = '{{{ ANALYTICS_SERVICE_URL }}}';
 const DEBUG = 'true' === 'true';
 
 function onPageLoad() {
@@ -16,7 +16,9 @@ function onPageLoad() {
   const params = new URLSearchParams(document.location.search);
   const siteId = params.get("siteId");
   if (!siteId) {
-    addTextToElement('stats-text', 'Invalid Site ID');
+    const text = document.createTextNode('Invalid Site ID');
+    const statsTextElement = document.getElementById('stats-text');
+    statsTextElement.appendChild(text);
     return;
   }
 

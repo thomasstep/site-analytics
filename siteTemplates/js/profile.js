@@ -32,7 +32,16 @@ function onPageLoad() {
 
       const siteTypes = ['owner', 'admin', 'writer', 'reader'];
       siteTypes.forEach((type) => {
-        addTextToElement(`${type}-sites`, jsonData[type]);
+        const siteIds = jsonData[type];
+        const siteTypeElement = document.getElementById(`${type}-sites`);
+        siteIds.forEach((siteId) => {
+          const aTag = document.createElement('a');
+          const textNode = document.createTextNode(siteId);
+          aTag.appendChild(textNode);
+          aTag.title = siteId;
+          aTag.href = `statistics.html?siteId=${siteId}`;
+          siteTypeElement.appendChild(aTag);
+        });
       });
     })
     .catch((err) => {

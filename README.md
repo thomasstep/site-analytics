@@ -30,8 +30,8 @@ Another caveat is that the HTML preprocessing will not resolve a tokenized API G
 ### Front End Config
 
 - `headless` creates a basic front end service of static HTML hosted on S3 and delivered through CloudFront.
-- `authenticationServiceUrl` is required whenever `headless` is set to `true`. Since the front end's authentication is implemented based on my [authentication service](https://github.com/thomasstep/authentication-service), this is required to point the API calls to a version of that service.
-- `authenticationServiceApplicationId` is required whenever `headless` is set to `true`. Since the front end's authentication is implemented based on my [authentication service](https://github.com/thomasstep/authentication-service), this is the ID of a pre-created application made using the service.
+- `authenticationServiceUrl` is required whenever `headless` is set to `false`. Since the front end's authentication is implemented based on my [authentication service](https://github.com/thomasstep/authentication-service), this is required to point the API calls to a version of that service.
+- `authenticationServiceApplicationId` is required whenever `headless` is set to `false`. Since the front end's authentication is implemented based on my [authentication service](https://github.com/thomasstep/authentication-service), this is the ID of a pre-created application made using the service.
 - `frontEndAllowedOrigins` this is an array of strings listing the allowed origins of requests to the CloudFront Distribution. See the CDK documentation about Distributions for more information.
 - `frontEndDomainNames` this is an array of strings listing the alternative domain names allowed to point to the CloudFront Distribution in case you want to create a `CNAME` for the front end. See the CDK documentation about Distributions for more information.
 - `frontEndCertificateArn` this is an ARN of a previously created certificate that is valid for at least one of the domain names. See the CDK documentation about Distributions for more information.
@@ -91,7 +91,7 @@ Using a type of resource-based authorization where each individual resource (sit
 
 ### API Layer
 
-Code for the API layer is contained in the `/src` folder.
+Code for the API layer is contained in the `src/` folder.
 
 #### API Design
 

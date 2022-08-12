@@ -1,11 +1,11 @@
 {
   "corsAllowOriginHeader": "*",
-  "useAuthorization": true,
+  "useAuthorization": false,
   "jwksUrl": "",
   "jwtClaims": {
     "maxTokenAge": 21600
   },
-  "headless": false,
+  "headless": true,
   "authenticationServiceUrl": "",
   "authenticationServiceApplicationId": "",
   "frontEndAllowedOrigins": [""],

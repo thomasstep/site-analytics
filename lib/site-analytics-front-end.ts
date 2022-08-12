@@ -86,6 +86,7 @@ export class FrontEnd extends Stack {
     new cloudfront.Distribution(this, 'site-analytics-site-dist', {
       defaultBehavior: {
         origin: new cloudfrontOrigins.S3Origin(primaryBucket),
+        viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       },
       domainNames,
       certificate,
