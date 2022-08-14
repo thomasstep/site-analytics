@@ -1,6 +1,5 @@
 import {
   constants,
-  addTextToElement,
   getCookie,
 } from "./util.js";
 
@@ -49,6 +48,7 @@ function onPageLoad() {
         console.log(jsonData);
       }
 
+      // TODO can delete this chart in favor of the next one on Aug 22
       const lineChartData = Object.entries(jsonData).map(([k, v]) => {
         return {
           x: k,
@@ -102,9 +102,63 @@ function onPageLoad() {
         },
       );
 
+      const totalPageViews = Object.entries(jsonData).map(([k, v]) => {
+        return {
+          x: k,
+          y: v.totalPageViews || 0,
+        };
+      }).sort((a, b) => {
+        // x property is the date
+        return new Date(a.x) - new Date(b.x);
+      });
+      if (DEBUG) {
+        console.log(totalPageViews);
+      }
+
+      const totalPageViewsChart = new Chart(
+        document.getElementById('total-page-views-chart'),
+        {
+          type: 'line',
+          data: {
+            datasets: [{
+              label: 'Views',
+              data: totalPageViews,
+              borderColor: 'rgb(75, 192, 192)',
+              tension: 0.4,
+            }],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              title: {
+                display: true,
+                text: 'Total Page Views',
+              },
+            },
+            scales: {
+              x: {
+                display: true,
+                title: {
+                  display: true,
+                  text: 'Date',
+                },
+              },
+              y: {
+                display: true,
+                title: {
+                  display: true,
+                  text: 'Views',
+                },
+              },
+            },
+          },
+        },
+      );
+
       const weeklyPageViewData = {};
       Object.keys(jsonData).forEach((date) => {
         const datePageView = jsonData[date].pageView;
+        // TODO on Aug 22, the `overall` removal from this object will be obsolete
         const {
           overall,
           ...actualPageViews

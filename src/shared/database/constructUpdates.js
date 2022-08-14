@@ -1,5 +1,5 @@
 const {
-  OVERALL_PAGE_VIEW_NAME,
+  TOTAL_PAGE_VIEWS_ATTRIBUTE_NAME,
   PAGE_VIEW_STAT_NAME,
   STATS_RETENTION_PERIOD,
   TTL_ATTRIBUTE_NAME,
@@ -46,16 +46,18 @@ function constructStatsUpdates(body) {
     attrNames[alphaNumValue] = value;
   }
 
-  if (body.pageView) {
-    addOne(PAGE_VIEW_STAT_NAME, OVERALL_PAGE_VIEW_NAME);
-  }
-
   Object.entries(body).forEach(([key, value]) => {
     if (value) {
       // Based on payload structure
       addOne(key, value);
     }
   });
+
+  if (body[PAGE_VIEW_STAT_NAME]) {
+    attrNames['#totalPageViews'] = TOTAL_PAGE_VIEWS_ATTRIBUTE_NAME;
+    const totalPageViewsUpdate = '#totalPageViews = if_not_exists(#totalPageViews, :zero) + :one';
+    updates.push(totalPageViewsUpdate);
+  }
 
   const ttl = Math.floor(Date.now() / 1000) + STATS_RETENTION_PERIOD;
 

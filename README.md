@@ -75,7 +75,7 @@ Using a type of resource-based authorization where each individual resource (sit
 | ------------------- | ------------- | -------------- |
 | `<user-id>`         | `profile`     | `{ owner: string[], admin: string[], writer: string[], reader: string[], created: timestamp }` |
 | `<site-id>`         | `site`        | `{ owner: string, admins: string[], writers: string[], readers: string[], emails: string[], name: string, url: string, created: timestamp }` |
-| `<site-id>#<date>`  | `stats`       | `{ pageViews: { overall: number, <page-name>: number }, <other-statistic>: { <identifier>: number }, ttl: timestamp }` |
+| `<site-id>#<date>`  | `stats`       | `{ totalPageViews: number, pageViews: { <page-name>: number }, <other-statistic>: { <identifier>: number }, ttl: timestamp }` |
 | Potential GSI Below ||
 | `<site-id>`         | none          | `{ emails: string[] }` |
 
@@ -206,5 +206,4 @@ Pages:
 
 ### TODO
 
-- Finish `TODO` around adding stats
 - Make the front end prettier
