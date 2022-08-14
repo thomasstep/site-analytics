@@ -37,6 +37,16 @@ function onPageLoad() {
     },
   })
     .then((response) => {
+      // Check for 401
+      if (response.status === 401) {
+        if (DEBUG) {
+          console.log('Recieved 401, redirecting to sign in.');
+        }
+
+        window.location.replace('/signin.html');
+      }
+
+      // Other uncovered error codes
       if (!response.ok) {
         throw new Error('Network response was not OK');
       }
