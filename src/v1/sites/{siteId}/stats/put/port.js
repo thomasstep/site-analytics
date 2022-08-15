@@ -13,7 +13,7 @@ async function port(siteId, stats) {
     throw new InputError(`Not allowed to create or update statistic with name ${TOTAL_PAGE_VIEWS_ATTRIBUTE_NAME}`);
   }
 
-  await logic(siteId, restOfBody);
+  await logic(siteId, stats);
 }
 
 module.exports = {
