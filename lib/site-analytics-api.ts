@@ -99,6 +99,15 @@ export class Api extends Stack {
     });
     this.api = api;
 
+    new apigateway.GatewayResponse(this, 'gateway-response-0', {
+      restApi: api.gateway,
+      type: apigateway.ResponseType.UNAUTHORIZED,
+      responseHeaders: {
+        'Access-Control-Allow-Origin': `'${config.corsAllowOriginHeader}'`,
+        'Access-Control-Allow-Credentials': "'true'",
+      },
+    });
+
     connectDdbToLambdas(
       primaryTable,
       api.lambdaFunctions,
@@ -189,7 +198,7 @@ export class Api extends Stack {
      *
      *************************************************************************/
 
-     scriptResource.addMethod(
+    scriptResource.addMethod(
       'GET',
       new apigateway.AwsIntegration({
         service: 's3',
