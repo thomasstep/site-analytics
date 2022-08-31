@@ -58,60 +58,6 @@ function onPageLoad() {
         console.log(jsonData);
       }
 
-      // TODO can delete this chart in favor of the next one on Aug 22
-      const lineChartData = Object.entries(jsonData).map(([k, v]) => {
-        return {
-          x: k,
-          y: v.pageView.overall,
-        };
-      }).sort((a, b) => {
-        // x property is the date
-        return new Date(a.x) - new Date(b.x);
-      });
-      if (DEBUG) {
-        console.log(lineChartData);
-      }
-
-      const weeklyViewsChart = new Chart(
-        document.getElementById('weekly-views-chart'),
-        {
-          type: 'line',
-          data: {
-            datasets: [{
-              label: 'Views',
-              data: lineChartData,
-              borderColor: 'rgb(75, 192, 192)',
-              tension: 0.4,
-            }],
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              title: {
-                display: true,
-                text: 'Past Week\'s Views',
-              },
-            },
-            scales: {
-              x: {
-                display: true,
-                title: {
-                  display: true,
-                  text: 'Date',
-                },
-              },
-              y: {
-                display: true,
-                title: {
-                  display: true,
-                  text: 'Views',
-                },
-              },
-            },
-          },
-        },
-      );
-
       const totalPageViews = Object.entries(jsonData).map(([k, v]) => {
         return {
           x: k,
