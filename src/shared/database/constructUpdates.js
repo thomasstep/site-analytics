@@ -38,8 +38,14 @@ function constructStatsUpdates(body) {
   };
 
   function addOne(stat, value) {
+    let cleanValue = value.replace(/[^a-z0-9]/gi, '');
+    if (cleanValue === '') {
+      // If there is ever a page with this name, then there will be weird errors
+      cleanValue = 'defaultValueForCaseOfSingleSlash12340987';
+    }
+
     const alphaNumKey = `#${stat.replace(/[^a-z0-9]/gi, '')}`;
-    const alphaNumValue = `#${value.replace(/[^a-z0-9]/gi, '')}`;
+    const alphaNumValue = `#${cleanValue}`;
     const attrName = `${alphaNumKey}.${alphaNumValue}`;
     updates.push(`${attrName} = if_not_exists(${attrName}, :zero) + :one`);
     attrNames[alphaNumKey] = stat;
