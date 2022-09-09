@@ -81,9 +81,9 @@ async function createUser(uniqueId) {
   await users.create(uniqueId);
 }
 
-async function readFromStats(uniqueId, siteId, startDate, endDate) {
+async function readFromStats(uniqueId, siteId, categories, startDate, endDate) {
   await authorizeUserForSite(uniqueId, siteId);
-  const statsByDate = sites.readStatsByDate(siteId, startDate, endDate);
+  const statsByDate = sites.readStatsByDate(siteId, categories, startDate, endDate);
   return statsByDate;
 }
 

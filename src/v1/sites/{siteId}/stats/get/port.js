@@ -4,7 +4,7 @@ const {
 
 const { logic } = require('./logic');
 
-async function port(auth, siteId, startDateInput, endDateInput) {
+async function port(auth, siteId, categories, startDateInput, endDateInput) {
   let startDate = startDateInput;
   let endDate = endDateInput;
   const [currentDay] = new Date().toISOString().split('T');
@@ -32,7 +32,7 @@ async function port(auth, siteId, startDateInput, endDateInput) {
     throw new InputError('End date needs to be after start date.', auth);
   }
 
-  const statsByDate = await logic(auth, siteId, startDate, endDate);
+  const statsByDate = await logic(auth, siteId, categories, startDate, endDate);
   return statsByDate;
 }
 

@@ -10,7 +10,7 @@ const { readFromStats } = require('/opt/ports');
  * @returns {string}
  */
 
-async function logic(auth, siteId, startDate, endDate) {
+async function logic(auth, siteId, categories, startDate, endDate) {
   const {
     uniqueId,
   } = auth;
@@ -18,7 +18,7 @@ async function logic(auth, siteId, startDate, endDate) {
     throw new MissingUniqueIdError('Unique ID not found while reading stats', auth);
   }
 
-  const statsByDate = await readFromStats(uniqueId, siteId, startDate, endDate);
+  const statsByDate = await readFromStats(uniqueId, siteId, categories, startDate, endDate);
   return statsByDate;
 }
 

@@ -75,7 +75,7 @@ Using a type of resource-based authorization where each individual resource (sit
 | ------------------- | ------------- | -------------- |
 | `<user-id>`         | `profile`     | `{ owner: string[], admin: string[], writer: string[], reader: string[], created: timestamp }` |
 | `<site-id>`         | `site`        | `{ owner: string, admins: string[], writers: string[], readers: string[], emails: string[], name: string, url: string, created: timestamp }` |
-| `<site-id>#<date>`  | `stats`       | `{ totalPageViews: number, pageViews: { <page-name>: number }, <other-statistic>: { <identifier>: number }, ttl: timestamp }` |
+| `<site-id>#<date>`  | `stats`       | `{ totalPageViews: number, pageView: { <page-name>: number }, <other-statistic>: { <identifier>: number }, ttl: timestamp }` |
 | Potential GSI Below ||
 | `<site-id>`         | none          | `{ emails: string[] }` |
 
@@ -154,8 +154,9 @@ Code for the API layer is contained in the `src/` folder.
   - Adds to the site's statistics
   - Could use `Host` header to determine which site should get credit or the site's ID (future)
 - `GET /sites/{id}/stats`
-  - Query parameters: start date, end date
+  - Query parameters: start date, end date, categories
   - Reads the site's statistics for given days
+  - Only returns stats from given categories or all categories
   - Only retrieve up to 7 days (MVP)
   - Paginate results for larger datasets (future)
 - `POST /sites/{id}/email/{address}` (future)

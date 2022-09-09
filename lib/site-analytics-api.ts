@@ -81,6 +81,7 @@ export class Api extends Stack {
           requestParameters: {
             'method.request.querystring.startDate': false,
             'method.request.querystring.endDate': false,
+            'method.request.querystring.categories': false,
           },
           requestValidator: 'validateParams',
         },

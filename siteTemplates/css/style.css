@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope&display=swap');
+
+body {
+  margin: 0 auto;
+  max-width: 50em;
+  line-height: 1.5;
+  padding: 4em 1em;
+  color: #566b78;
+  font: 16px/1.5 'Manrope', sans-serif;
+}
+
+h2 {
+  margin-top: 1em;
+  padding-top: 1em;
+}
+
+h1,
+h2,
+strong {
+  color: #333;
+}
+
+a {
+  color: #149546;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+form label {
+  margin: auto;
+}
+
+form input {
+  margin: auto;
+  margin-bottom: 60px;
+}
+
+form button {
+  margin: auto;
+}

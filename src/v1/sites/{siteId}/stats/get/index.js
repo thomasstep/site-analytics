@@ -14,8 +14,13 @@ async function handler(event) {
     // Validation happens in the port
     const startDate = event?.queryStringParameters?.startDate;
     const endDate = event?.queryStringParameters?.endDate;
+    const queryCategories = event?.queryStringParameters?.categories;
+    let categories = [];
+    if (queryCategories) {
+      categories = queryCategories.split(',');
+    }
 
-    const statsByDate = await port(auth, siteId, startDate, endDate);
+    const statsByDate = await port(auth, siteId, categories, startDate, endDate);
     const data = {
       statusCode: GOOD_STATUS_CODE,
       body: JSON.stringify(statsByDate),

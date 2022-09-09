@@ -133,7 +133,7 @@ async function addToStats(id, stats) {
   }
 }
 
-async function readStatsByDate(id, startDateString, endDateString) {
+async function readStatsByDate(id, categories, startDateString, endDateString) {
   const startDate = new Date(startDateString);
   const endDate = new Date(endDateString);
   const dates = getDateRange(startDate, endDate);
@@ -144,11 +144,19 @@ async function readStatsByDate(id, startDateString, endDateString) {
       secondaryId: statsSecondaryId,
     });
   });
+  request = {
+    Keys: keys,
+  };
+  console.log(categories)
+  if (categories.length > 0) {
+    // Need the id to get the date
+    const projectionExp = `id,${categories.join(',')}`;
+    console.log(projectionExp)
+    request.ProjectionExpression = projectionExp;
+  }
   const batchGetItemRequest = {
     RequestItems: {
-      [TableName]: {
-        Keys: keys,
-      },
+      [TableName]: request,
     },
   };
   const stats = await documentClient.batchGet(batchGetItemRequest);
