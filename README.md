@@ -1,5 +1,7 @@
 # Site Analytics
 
+![Example screenshot of the service](/img/statsExampleScreenshot.png)
+
 ## Getting Started
 
 ```bash
